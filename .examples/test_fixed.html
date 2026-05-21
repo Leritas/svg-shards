@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Исправленное тестирование abc2_final.js</title>
+    <script src="abc2_final.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        canvas { border: 2px solid #333; background: white; display: block; margin: 20px auto; }
+        button { margin: 5px; padding: 8px 12px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px; }
+        button:hover { background: #45a049; }
+        .info { max-width: 800px; margin: 0 auto; padding: 15px; background: #f0f0f0; border-radius: 5px; }
+        .pass { color: green; font-weight: bold; }
+        .fail { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h1>✅ Исправленное тестирование abc2_final.js</h1>
+        <p>Версия с исправленным классом ScreenConfig</p>
+    </div>
+
+    <div id="testResults" class="info"></div>
+
+    <canvas id="geometryCanvas" width="600" height="400"></canvas>
+
+    <div class="info">
+        <h3>Управление:</h3>
+        <button onclick="testScreenConfig()">✅ Тест ScreenConfig</button>
+        <button onclick="createSimpleGeometry()">🎨 Создать геометрию</button>
+        <button onclick="clearCanvas()">🗑️ Очистить</button>
+    </div>
+
+    <script>
+        window.addEventListener('load', function() {
+            console.log('abc2_final.js загружен');
+            runTests();
+        });
+
+        function runTests() {
+            const results = document.getElementById('testResults');
+            let html = '<h2>Результаты тестирования</h2>';
+
+            // Тест 1: Проверка класса Complex
+            try {
+                const complex = new Complex(3, 4);
+                const absResult = complex.abs();
+                const test1Passed = Math.abs(absResult - 5) < 0.001;
+                html += `<p class="${test1Passed ? 'pass' : 'fail'}">Complex arithmetic: ${test1Passed ? '✅ PASS' : '❌ FAIL'} (3+4i=${absResult})</p>`;
+            } catch(e) {
+                html += `<p class="fail">Complex: ❌ FAIL (${e.message})</p>`;
+            }
+
+            // Тест 2: Проверка класса GeometryCommands
+            try {
+                const geometry = new GeometryCommands();
+                const test2Passed = typeof geometry.createScreenConfig === 'function';
+                html += `<p class="${test2Passed ? 'pass' : 'fail'}">GeometryCommands: ${test2Passed ? '✅ PASS' : '❌ FAIL'}</p>`;
+            } catch(e) {
+                html += `<p class="fail">GeometryCommands: ❌ FAIL (${e.message})</p>`;
+            }
+
+            // Тест 3: Проверка класса ScreenConfig
+            try {
+                const screenConfig = geometry.createScreenConfig(0, 0, 600, 400);
+                const test3Passed = screenConfig instanceof Object && screenConfig.M !== undefined;
+                html += `<p class="${test3Passed ? 'pass' : 'fail'}">ScreenConfig: ${test3Passed ? '✅ PASS' : '❌ FAIL'}</p>`;
+            } catch(e) {
+                html += `<p class="fail">ScreenConfig: ❌ FAIL (${e.message})</p>`;
+            }
+
+            // Тест 4: Проверка класса GraphicalRenderer
+            try {
+                const geometry = new GeometryCommands();
+                const screenConfig = geometry.createScreenConfig(0, 0, 600, 400);
+                const renderer = new GraphicalRenderer(geometry, screenConfig);
+                const test4Passed = renderer instanceof Object && typeof renderer.initialize === 'function';
+                html += `<p class="${test4Passed ? 'pass' : 'fail'}">GraphicalRenderer: ${test4Passed ? '✅ PASS' : '❌ FAIL'}</p>`;
+            } catch(e) {
+                html += `<p class="fail">GraphicalRenderer: ❌ FAIL (${e.message})</p>`;
+            }
+
+            // Тест 5: Проверка основных операций
+            try {
+                const geometry = new GeometryCommands();
+                const att = new Attributes({ level: 0, checked: true });
+                const point = geometry.createPoint(new Complex(100, 0), new Complex(100, 0), 1, att);
+                const test5Passed = point.type === 'P';
+                html += `<p class="${test5Passed ? 'pass' : 'fail'}">Create Point: ${test5Passed ? '✅ PASS' : '❌ FAIL'}</p>`;
+            } catch(e) {
+                html += `<p class="fail">Create Point: ❌ FAIL (${e.message})</p>`;
+            }
+
+            results.innerHTML = html;
+
+            // Инициализация глобальных переменных
+            try {
+                window.currentGeometry = new GeometryCommands();
+                window.currentRenderer = new GraphicalRenderer(
+                    window.currentGeometry,
+                    window.currentGeometry.createScreenConfig(0, 0, 600, 400)
+                );
+
+                // Инициализация canvas
+                const canvas = document.getElementById('geometryCanvas');
+                if (canvas) {
+                    window.currentRenderer.initialize(canvas);
+                    console.log('Система успешно инициализирована! ✅');
+                }
+            } catch(e) {
+                console.error('Ошибка инициализации:', e);
+                results.innerHTML += `<p class="fail">Системная инициализация: ❌ FAIL (${e.message})</p>`;
+            }
+        }
+
+        function testScreenConfig() {
+            try {
+                const geometry = new GeometryCommands();
+                const screenConfig = geometry.createScreenConfig(0, 0, 1173, 452);
+
+                console.log('ScreenConfig создан:', screenConfig);
+                console.log('Матрица M:', screenConfig.M);
+                alert('✅ ScreenConfig работает!\n\n' +
+                      'xm: ' + screenConfig.xm + '\n' +
+                      'ym: ' + screenConfig.ym + '\n' +
+                      'xScreenMin: ' + screenConfig.xScreenMin + '\n' +
+                      'yScreenMin: ' + screenConfig.yScreenMin + '\n' +
+                      'xScreenMax: ' + screenConfig.xScreenMax + '\n' +
+                      'yScreenMax: ' + screenConfig.yScreenMax);
+            } catch(e) {
+                alert('❌ Ошибка: ' + e.message);
+            }
+        }
+
+        function createSimpleGeometry() {
+            try {
+                if (!window.currentGeometry) {
+                    alert('Система не инициализирована!');
+                    return;
+                }
+
+                const att = new Attributes({ level: 0, checked: true, red: 0, green: 0, blue: 0 });
+
+                // Создаём три точки треугольника
+                const p1 = window.currentGeometry.createPoint(
+                    new Complex(300, 0),  // x
+                    new Complex(100, 0),  // y
+                    1,
+                    att
+                );
+
+                const p2 = window.currentGeometry.createPoint(
+                    new Complex(150, 0),
+                    new Complex(300, 0),
+                    1,
+                    att
+                );
+
+                const p3 = window.currentGeometry.createPoint(
+                    new Complex(450, 0),
+                    new Complex(300, 0),
+                    1,
+                    att
+                );
+
+                // Создаём линии треугольника
+                const line1 = window.currentGeometry.createLine(
+                    p1.x, p1.y, 1,
+                    p2.x, p2.y, 1,
+                    false, "sobstv",
+                    att
+                );
+
+                const line2 = window.currentGeometry.createLine(
+                    p2.x, p2.y, 1,
+                    p3.x, p3.y, 1,
+                    false, "sobstv",
+                    att
+                );
+
+                const line3 = window.currentGeometry.createLine(
+                    p3.x, p3.y, 1,
+                    p1.x, p1.y, 1,
+                    false, "sobstv",
+                    att
+                );
+
+                // Отрисовываем
+                window.currentRenderer.draw([p1, p2, p3, line1, line2, line3]);
+
+                console.log('Геометрия создана успешно!');
+                alert('✅ Треугольник создан!');
+
+            } catch(error) {
+                console.error('Ошибка создания:', error);
+                alert('❌ Ошибка: ' + error.message);
+            }
+        }
+
+        function clearCanvas() {
+            try {
+                if (!window.currentRenderer) {
+                    alert('Система не инициализирована!');
+                    return;
+                }
+                window.currentRenderer.draw([]);
+                console.log('Canvas очищен');
+            } catch(e) {
+                alert('Ошибка: ' + e.message);
+            }
+        }
+    </script>
+</body>
+</html>

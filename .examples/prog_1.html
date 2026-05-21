@@ -1,0 +1,187 @@
+<HTML>
+
+<HEAD>
+<script src="abc.js"></script>
+</HEAD>
+<BODY>
+<SCRIPT>
+var AAA=0;
+ppp=parent.document.getElementById("rightFrame");
+pd=parent;
+vvv=ppp.offsetHeight;
+hhh=ppp.offsetWidth;
+U1=-hhh/2;
+U2=hhh;
+U3=-vvv/2;
+U4=vvv;
+var _Xl=U1;
+var _Yu=U3;
+var _XW=U2;
+var _YH=U4-40;
+     var NS="http://www.w3.org/2000/svg";
+
+     var SVG=function(h,w)
+     {
+          var svg=document.createElementNS(NS,"svg");
+          svg.width=w;
+          svg.height=h;
+          return svg;
+     }
+
+     var svg=SVG(1173,452);
+     var SCR=InitSCR(0,0,1173,452);
+      svg.setAttribute("viewBox",_Xl+" "+_Yu+" "+_XW+" "+_YH);
+     document.body.appendChild(svg);
+     window.addEventListener("resize", rd);
+     document.addEventListener( "click", function(e) {
+     var x = getPosition(e).x;
+     var y = getPosition(e).y;
+     console.log("x pos: "+ x +" // y pos:"+ y);
+     pd=parent;
+     win1=parent.win1;
+     win1.focus();
+     win1.focus();
+     win1.focus();
+     testwin();
+     });
+
+     var rect=function(h,w,fill)
+     {
+     var SVGObj= document.createElementNS(NS,"rect");
+     SVGObj.width.baseVal.value=w;
+     SVGObj.height.baseVal.value=h;
+     SVGObj.setAttribute("height",h);
+     SVGObj.style.fill=fill;
+     return SVGObj;
+     }
+
+   function rd()
+   {
+   } // rd
+function Main()
+{
+
+		var SVGObj= document.createElementNS(NS,"rect");
+		SVGObj.x.baseVal.value=_Xl;
+		SVGObj.y.baseVal.value=_Yu;
+		SVGObj.width.baseVal.value=_XW;
+		SVGObj.height.baseVal.value=_YH;
+		SVGObj.style.fill="white";
+		SVGObj.style.stroke="black";
+		svg.appendChild(SVGObj);
+     var arr = new Array();
+     var d1=new Object();
+     arr.push(d1);
+     var d2=new Object();
+     arr.push(d2);
+     var d3=new Object();
+     arr.push(d3);
+     var d4=new Object();
+     arr.push(d4);
+     var d5=new Object();
+     arr.push(d5);
+     var d6=new Object();
+     arr.push(d6);
+     var d7=new Object();
+     arr.push(d7);
+     var p1=new Object();
+     arr.push(p1);
+     var p2=new Object();
+     arr.push(p2);
+     var d8=new Object();
+     arr.push(d8);
+     var d9=new Object();
+     arr.push(d9);
+     var d10=new Object();
+     arr.push(d10);
+     var d11=new Object();
+     arr.push(d11);
+     var d12=new Object();
+     arr.push(d12);
+     var p3=new Object();
+     arr.push(p3);
+     var p4=new Object();
+     arr.push(p4);
+     var p5=new Object();
+     arr.push(p5);
+     var d13=new Object();
+     arr.push(d13);
+     var p6=new Object();
+     arr.push(p6);
+     var p7=new Object();
+     arr.push(p7);
+     var p8=new Object();
+     arr.push(p8);
+     var d14=new Object();
+     arr.push(d14);
+     var d15=new Object();
+     arr.push(d15);
+
+     var Att_d1={Lv:0, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_d2={Lv:0, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_d3={Lv:0, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_d4={Lv:5, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_d5={Lv:5, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_d6={Lv:5, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_d7={Lv:5, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_p1={Lv:0, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_p2={Lv:0, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_d8={Lv:0, lay:["основной"], Chk:1, Red:255, Green:128, Blue:0};
+     var Att_d9={Lv:5, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_d10={Lv:5, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_d11={Lv:5, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_d12={Lv:5, lay:["основной"], Chk:1, Red:6, Green:170, Blue:254};
+     var Att_p3={Lv:5, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_p4={Lv:5, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_p5={Lv:5, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_d13={Lv:5, lay:["основной"], Chk:1, Red:6, Green:170, Blue:254};
+     var Att_p6={Lv:5, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_p7={Lv:5, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_p8={Lv:5, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_d14={Lv:5, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+     var Att_d15={Lv:5, lay:["основной"], Chk:1, Red:0, Green:0, Blue:0};
+
+     var Chisl1={C:{Re:-298,Im:0},OB:"C"};
+     var Chisl2={C:{Re:-60,Im:0},OB:"C"};
+     var Chisl3={C:{Re:107.7,Im:0},OB:"C"};
+     var Chisl4={C:{Re:56,Im:0},OB:"C"};
+     var Chisl5={C:{Re:207,Im:0},OB:"C"};
+     var Chisl6={C:{Re:66,Im:0},OB:"C"};
+     var Chisl7={C:{Re:178,Im:0},OB:"C"};
+     var Chisl8={C:{Re:-12,Im:0},OB:"C"};
+     var Chisl9={C:{Re:37,Im:0},OB:"C"};
+     var Chisl10={C:{Re:211.18578,Im:0},OB:"C"};
+
+     do {
+     var $=false;
+     if (d1.OB == undefined) $=EExecD00(d1,Chisl1,Chisl2,Chisl3,Att_d1,1,1,1) || $;
+     if (d2.OB == undefined) $=EExecD00(d2,Chisl4,Chisl5,Chisl6,Att_d2,1,1,1) || $;
+     if (d3.OB == undefined) $=EExecD00(d3,Chisl7,Chisl8,Chisl9,Att_d3,1,1,1) || $;
+     if ((d4.OB == undefined) && (d5.OB == undefined)) $=EExecDI(d4,d5,d1,d2,Att_d4,Att_d5,1,1) || $;
+     if ((d6.OB == undefined) && (d7.OB == undefined)) $=EExecDI(d6,d7,d1,d3,Att_d6,Att_d7,1,1) || $;
+     if ((p1.OB == undefined) && (p2.OB == undefined)) $=EExecP3(p1,p2,d4,d6,Att_p1,Att_p2,1,1) || $;
+     if (d8.OB == undefined) $=EExecD0(d8,p1,Chisl10,Att_d8,1,1) || $;
+     if (d9.OB == undefined) $=EExecYI(d9,d8,d1,Att_d9,1,1) || $;
+     if (d10.OB == undefined) $=EExecYI(d10,d8,d2,Att_d10,1,1) || $;
+     if (d11.OB == undefined) $=EExecYI(d11,d8,d3,Att_d11,1,1) || $;
+     if ((d12.OB == undefined) && (p3.OB == undefined) && (p4.OB == undefined) && (p5.OB == undefined) && (d13.OB == undefined) && (p6.OB == undefined) && (p7.OB == undefined) && (p8.OB == undefined)) $=EExecD60(d12,p3,p4,p5,d13,p6,p7,p8,d9,d10,d11,Att_d12,Att_p3,Att_p4,Att_p5,Att_d13,Att_p6,Att_p7,Att_p8,1,1,1) || $;
+     if (d14.OB == undefined) $=EExecYI(d14,d8,d12,Att_d14,1,1) || $;
+     if (d15.OB == undefined) $=EExecYI(d15,d8,d13,Att_d15,1,1) || $;
+} while ($==true);
+     draw(arr);
+     }
+     Main()
+
+</SCRIPT>
+<p>
+<button onclick="funcplus()"> <img src="https://voloshinov.ru/Simplex/Common/plus.png"> </button>
+<button onclick="funcminus()"> <img src="https://voloshinov.ru/Simplex/Common/minus.png"> </button>
+<button onclick="funcleft()"> <img src="https://voloshinov.ru/Simplex/Common/left_arrow.png"> </button>
+<button onclick="funcright()"> <img src="https://voloshinov.ru/Simplex/Common/right_arrow.png"> </button>
+<button onclick="funcup()"> <img src="https://voloshinov.ru/Simplex/Common/up_arrow.png"> </button>
+<button onclick="funcdown()"> <img src="https://voloshinov.ru/Simplex/Common/down_arrow.png"> </button>
+<button onclick="func2()"> <img src="https://voloshinov.ru/Simplex/Common/divide.png"> </button>
+<button onclick="func3()"> <img src="https://voloshinov.ru/Simplex/Common/multiply.png"> </button>
+</p>
+</BODY>
+</HTML>

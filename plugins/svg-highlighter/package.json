@@ -1,0 +1,24 @@
+{
+  "name": "@svg-shards/highlighter",
+  "version": "1.0.0",
+  "description": "SVG element highlighter plugin for svg-shards",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "svg-shards": "file:../.."
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

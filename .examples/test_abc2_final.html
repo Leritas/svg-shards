@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Быстрый тест abc2_final.js</title>
+    <script src="abc2_final.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { padding: 10px; margin: 5px 0; border: 1px solid #ccc; }
+        .pass { background: #d4edda; border-color: #c3e6cb; }
+        .fail { background: #f8d7da; border-color: #f5c6cb; }
+        canvas { border: 2px solid #333; background: white; }
+    </style>
+</head>
+<body>
+    <h1>Быстрый тест abc2_final.js</h1>
+    <div id="tests"></div>
+    <canvas id="testCanvas" width="600" height="400"></canvas>
+
+    <script>
+        // Тестирование основных компонентов
+        const tests = [];
+
+        // Тест 1: Создание комплексных чисел
+        try {
+            const complex = new Complex(3, 4);
+            const result = complex.abs() === 5;
+            tests.push({ name: 'Complex arithmetic', result: result, msg: '3+4i = 5' });
+        } catch(e) {
+            tests.push({ name: 'Complex arithmetic', result: false, msg: e.message });
+        }
+
+        // Тест 2: Создание атрибутов
+        try {
+            const att = new Attributes({ level: 2, checked: true });
+            const result = att.level === 2 && att.checked === true;
+            tests.push({ name: 'Attributes creation', result: result, msg: 'Level 2, checked' });
+        } catch(e) {
+            tests.push({ name: 'Attributes creation', result: false, msg: e.message });
+        }
+
+        // Тест 3: Создание точки
+        try {
+            const geometry = new GeometryCommands();
+            const x = new Complex(10, 0);
+            const y = new Complex(20, 0);
+            const point = geometry.createPoint(x, y, 1, new Attributes());
+            const result = point.type === 'P' && point.x.re === 10;
+            tests.push({ name: 'Point creation', result: result, msg: 'Created point at (10,20)' });
+        } catch(e) {
+            tests.push({ name: 'Point creation', result: false, msg: e.message });
+        }
+
+        // Тест 4: Создание линии
+        try {
+            const geometry = new GeometryCommands();
+            const p1 = geometry.createPoint(new Complex(10, 0), new Complex(10, 0), 1, new Attributes());
+            const p2 = geometry.createPoint(new Complex(100, 0), new Complex(100, 0), 1, new Attributes());
+            const line = geometry.createLine(p1.x, p1.y, 1, p2.x, p2.y, 1, false, "sobstv", new Attributes());
+            const result = line.type === 'O';
+            tests.push({ name: 'Line creation', result: result, msg: 'Created line' });
+        } catch(e) {
+            tests.push({ name: 'Line creation', result: false, msg: e.message });
+        }
+
+        // Тест 5: Конструктивные команды
+        try {
+            const geometry = new GeometryCommands();
+            const commands = new ConstructiveCommands(geometry);
+            const att = new Attributes({ level: 0, checked: true });
+
+            const p1 = geometry.createPoint(new Complex(0, 0), new Complex(0, 0), 1, att);
+            const p2 = geometry.createPoint(new Complex(10, 0), new Complex(10, 0), 1, att);
+            const result = {};
+
+            commands.EExecPP(result, p1, p2, att, 1, 1);
+            const success = result instanceof Point && Math.abs(result.x.re - 5) < 0.1;
+
+            tests.push({ name: 'Constructive commands', result: success, msg: 'Midpoint calculation' });
+        } catch(e) {
+            tests.push({ name: 'Constructive commands', result: false, msg: e.message });
+        }
+
+        // Тест 6: Графический рендеринг
+        try {
+            const geometry = new GeometryCommands();
+            const config = geometry.createScreenConfig(0, 0, 600, 400);
+            const renderer = new GraphicalRenderer(geometry, config);
+
+            const canvas = document.getElementById('testCanvas');
+            renderer.initialize(canvas);
+
+            // Создаем тестовые объекты
+            const p1 = geometry.createPoint(new Complex(100, 0), new Complex(100, 0), 1, new Attributes());
+            const p2 = geometry.createPoint(new Complex(300, 0), new Complex(200, 0), 1, new Attributes());
+
+            renderer.draw([p1, p2]);
+
+            tests.push({ name: 'Graphical rendering', result: true, msg: 'Canvas initialized' });
+        } catch(e) {
+            tests.push({ name: 'Graphical rendering', result: false, msg: e.message });
+        }
+
+        // Тест 7: Файловый менеджер
+        try {
+            const geometry = new GeometryCommands();
+            const fileManager = new FileManager(geometry);
+            const success = fileManager.currentProject !== undefined;
+            tests.push({ name: 'File manager', result: success, msg: 'Project initialized' });
+        } catch(e) {
+            tests.push({ name: 'File manager', result: false, msg: e.message });
+        }
+
+        // Тест 8: UI менеджер
+        try {
+            const geometry = new GeometryCommands();
+            const config = geometry.createScreenConfig(0, 0, 600, 400);
+            const renderer = new GraphicalRenderer(geometry, config);
+            const fileManager = new FileManager(geometry);
+            const uiManager = new UIManager(geometry, renderer, fileManager);
+
+            const success = uiManager.interactionMode === 'select';
+            tests.push({ name: 'UI manager', result: success, msg: 'UI initialized' });
+        } catch(e) {
+            tests.push({ name: 'UI manager', result: false, msg: e.message });
+        }
+
+        // Отображение результатов тестов
+        const testContainer = document.getElementById('tests');
+        let passed = 0, failed = 0;
+
+        tests.forEach(test => {
+            const testElement = document.createElement('div');
+            testElement.className = 'test ' + (test.result ? 'pass' : 'fail');
+            testElement.innerHTML = `
+                <strong>${test.name}</strong>: ${test.result ? '✅ PASS' : '❌ FAIL'}
+                <br><small>${test.msg}</small>
+            `;
+            testContainer.appendChild(testElement);
+
+            if (test.result) passed++;
+            else failed++;
+        });
+
+        // Итоговый результат
+        const summary = document.createElement('div');
+        summary.innerHTML = `
+            <h2>Результаты тестирования</h2>
+            <p>Всего тестов: ${tests.length}</p>
+            <p>Прошедших: <strong style="color:green">${passed}</strong></p>
+            <p>Провалившихся: <strong style="color:red">${failed}</strong></p>
+            <p>Успешность: <strong>${((passed/tests.length)*100).toFixed(1)}%</strong></p>
+            ${failed === 0 ? '<p style="color:green; font-weight:bold;">🎉 Все тесты прошли успешно! abc2_final.js работает идеально!</p>' :
+              '<p style="color:orange;">⚠️ Обратите внимание на провалившиеся тесты</p>'}
+        `;
+        testContainer.appendChild(summary);
+
+        console.log('Тестирование abc2_final.js завершено');
+        console.log('Прошедших:', passed, 'Провалившихся:', failed);
+    </script>
+</body>
+</html>

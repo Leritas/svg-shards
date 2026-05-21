@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ Исправленная prog_1_adapted.html</title>
+    <script src="abc2_final.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        canvas {
+            border: 2px solid #333;
+            background: white;
+            margin: 20px 0;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 800px;
+        }
+        button {
+            padding: 8px 12px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .info {
+            margin: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            max-width: 800px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>✅ Исправленная версия prog_1.html с abc2_final.js</h1>
+
+    <div id="status" class="info">
+        <h3>Статус системы:</h3>
+        <p>Загрузка классов: <span id="classStatus">Проверка...</span></p>
+        <p>Инициализация: <span id="initStatus">Ожидание...</span></p>
+        <p>Объектов создано: <span id="objectCount">0</span></p>
+        <p>Масштаб: <span id="scaleFactor">1.0</span>x</p>
+    </div>
+
+    <canvas id="geometryCanvas" width="1173" height="452"></canvas>
+
+    <div class="info">
+        <h3>Управление:</h3>
+        <div class="controls">
+            <button onclick="zoomIn()">➕ Увеличить</button>
+            <button onclick="zoomOut()">➖ Уменьшить</button>
+            <button onclick="panLeft()">⬅️ Влево</button>
+            <button onclick="panRight()">➡️ Вправо</button>
+            <button onclick="panUp()">⬆️ Вверх</button>
+            <button onclick="panDown()">⬇️ Вниз</button>
+            <button onclick="resetView()">🔄 Сброс</button>
+            <button onclick="exportSVG()">📥 Экспорт SVG</button>
+            <button onclick="clearCanvas()">🗑️ Очистить</button>
+        </div>
+    </div>
+
+    <div id="errors" class="info"></div>
+
+    <script>
+        // Глобальные переменные
+        window.objects = [];
+        window.currentScale = 1.0;
+        window.offsetX = 0;
+        window.offsetY = 0;
+
+        // Атрибуты для цветов
+        const blackAtt = new Attributes({ level: 0, checked: true, red: 0, green: 0, blue: 0 });
+        const orangeAtt = new Attributes({ level: 0, checked: true, red: 255, green: 128, blue: 0 });
+        const blueAtt = new Attributes({ level: 0, checked: true, red: 6, green: 170, blue: 254 });
+
+        // Инициализация компонентов
+        window.geom = new GeometryCommands();
+        window.constGeom = new ConstructiveCommands(window.geom);
+        window.projGeom = new ProjectiveGeometry(window.geom);
+
+        // Настройка экрана
+        let screenConfig = window.geom.createScreenConfig(0, 0, 1173, 452);
+
+        // Инициализация рендерера
+        const renderer = new GraphicalRenderer(window.geom, screenConfig);
+        const canvas = document.getElementById('geometryCanvas');
+        renderer.initialize(canvas);
+
+        // Сохраняем renderer глобально для функций управления
+        window.renderer = renderer;
+
+        // Адаптация функции создания дуги D00 из оригинала
+        function EExecD00(target, x, y, z, att) {
+            if (!x || !y || !z || x.type !== 'C' || y.type !== 'C' || z.type !== 'C') {
+                console.warn('Invalid inputs for EExecD00');
+                return null;
+            }
+
+            const centerX = z.value.re;  // центр из z
+            const centerY = 0;           // y-координата центра
+            const radius = Math.abs(x.value.re); // радиус из x
+
+            const center = new Complex(centerX, centerY);
+            const radiusComplex = new Complex(radius, 0);
+
+            // Создаём дугу
+            const arc = window.geom.createArc(
+                center,
+                radiusComplex,
+                new Complex(centerX + radius, 0),
+                new Complex(centerY, 0),
+                new Complex(centerX + radius, 0),
+                new Complex(centerY, 0),
+                att || blackAtt
+            );
+
+            if (target) {
+                Object.assign(target, arc);
+            }
+
+            return arc;
+        }
+
+        // Адаптация функции пересечения окружностей P3 из оригинала
+        function EExecP3(target1, target2, arc1, arc2, att1, att2) {
+            if (!arc1 || !arc2) {
+                console.warn('Invalid inputs for EExecP3');
+                return false;
+            }
+
+            const intersections = window.geom.calculateCircleIntersections(arc1, arc2);
+
+            if (!intersections) {
+                console.warn('No intersections found');
+                return false;
+            }
+
+            const { X1, Y1, X2, Y2 } = intersections;
+
+            if (target1) {
+                const point1 = window.geom.createPoint(X1, Y1, 1, att1 || blackAtt);
+                Object.assign(target1, point1);
+                window.objects.push(point1);
+            }
+
+            if (target2) {
+                const point2 = window.geom.createPoint(X2, Y2, 1, att2 || blackAtt);
+                Object.assign(target2, point2);
+                window.objects.push(point2);
+            }
+
+            return true;
+        }
+
+        // Основная функция построения (адаптация Main из оригинала)
+        function Main() {
+            console.log('Начало построения геометрии...');
+
+            // Очищаем предыдущие объекты
+            clearCanvas();
+
+            // Создаём объекты в стиле оригинала
+            const d1 = {};
+            const d2 = {};
+            const d3 = {};
+            const d4 = {};
+            const d5 = {};
+            const d6 = {};
+            const d7 = {};
+            const p1 = {};
+            const p2 = {};
+            const d8 = {};
+            const d9 = {};
+            const d10 = {};
+            const d11 = {};
+            const d12 = {};
+            const p3 = {};
+            const p4 = {};
+            const p5 = {};
+            const d13 = {};
+            const p6 = {};
+            const p7 = {};
+            const p8 = {};
+            const d14 = {};
+            const d15 = {};
+
+            // Создаём комплексные числа (аналог Chisl1, Chisl2, и т.д.)
+            const Chisl1 = { type: 'C', value: new Complex(-298, 0) };
+            const Chisl2 = { type: 'C', value: new Complex(-60, 0) };
+            const Chisl3 = { type: 'C', value: new Complex(107.7, 0) };
+            const Chisl4 = { type: 'C', value: new Complex(56, 0) };
+            const Chisl5 = { type: 'C', value: new Complex(207, 0) };
+            const Chisl6 = { type: 'C', value: new Complex(66, 0) };
+            const Chisl7 = { type: 'C', value: new Complex(178, 0) };
+            const Chisl8 = { type: 'C', value: new Complex(-12, 0) };
+            const Chisl9 = { type: 'C', value: new Complex(37, 0) };
+            const Chisl10 = { type: 'C', value: new Complex(211.18578, 0) };
+
+            // Выполняем операции
+            // Создаём три базовые окружности
+            if (!d1.OB) {
+                EExecD00(d1, Chisl1, Chisl2, Chisl3, blackAtt);
+                if (d1.type === 'D') window.objects.push(d1);
+            }
+
+            if (!d2.OB) {
+                EExecD00(d2, Chisl4, Chisl5, Chisl6, blackAtt);
+                if (d2.type === 'D') window.objects.push(d2);
+            }
+
+            if (!d3.OB) {
+                EExecD00(d3, Chisl7, Chisl8, Chisl9, blackAtt);
+                if (d3.type === 'D') window.objects.push(d3);
+            }
+
+            // Пересечение окружностей
+            if (!p1.OB && !p2.OB) {
+                if (d1.type === 'D' && d3.type === 'D') {
+                    EExecP3(p1, p2, d1, d3, blackAtt, blackAtt);
+                }
+            }
+
+            // Создаём окружность d8 через точку p1
+            if (!d8.OB) {
+                EExecD00(d8, Chisl10,
+                    {type:'C', value: new Complex(p1.x ? p1.x.re : 0, 0)},
+                    {type:'C', value: new Complex(p1.y ? p1.y.re : 0, 0)},
+                    orangeAtt);
+                if (d8.type === 'D') window.objects.push(d8);
+            }
+
+            // Создаём дополнительные окружности для демонстрации
+            if (!d9.OB) {
+                EExecD00(d9, {type:'C', value: new Complex(58.34, 0)},
+                    {type:'C', value: new Complex(-158.65, 0)},
+                    {type:'C', value: new Complex(-37.79, 0)}, blackAtt);
+                if (d9.type === 'D') window.objects.push(d9);
+            }
+
+            if (!d10.OB) {
+                EExecD00(d10, {type:'C', value: new Complex(58.34, 0)},
+                    {type:'C', value: new Complex(50.21, 0)},
+                    {type:'C', value: new Complex(-260.72, 0)}, blackAtt);
+                if (d10.type === 'D') window.objects.push(d10);
+            }
+
+            if (!d11.OB) {
+                EExecD00(d11, {type:'C', value: new Complex(58.34, 0)},
+                    {type:'C', value: new Complex(277.18, 0)},
+                    {type:'C', value: new Complex(-73.86, 0)}, blackAtt);
+                if (d11.type === 'D') window.objects.push(d11);
+            }
+
+            if (!d12.OB) {
+                EExecD00(d12, {type:'C', value: new Complex(277.45, 0)},
+                    {type:'C', value: new Complex(60.42, 0)},
+                    {type:'C', value: new Complex(-41.85, 0)}, blueAtt);
+                if (d12.type === 'D') window.objects.push(d12);
+            }
+
+            if (!d13.OB) {
+                EExecD00(d13, {type:'C', value: new Complex(160.76, 0)},
+                    {type:'C', value: new Complex(60.42, 0)},
+                    {type:'C', value: new Complex(-41.85, 0)}, blueAtt);
+                if (d13.type === 'D') window.objects.push(d13);
+            }
+
+            if (!d14.OB) {
+                EExecD00(d14, {type:'C', value: new Complex(167.79, 0)},
+                    {type:'C', value: new Complex(-26.79, 0)},
+                    {type:'C', value: new Complex(-68.61, 0)}, blackAtt);
+                if (d14.type === 'D') window.objects.push(d14);
+            }
+
+            if (!d15.OB) {
+                EExecD00(d15, {type:'C', value: new Complex(317.06, 0)},
+                    {type:'C', value: new Complex(-101.10, 0)},
+                    {type:'C', value: new Complex(-91.41, 0)}, blackAtt);
+                if (d15.type === 'D') window.objects.push(d15);
+            }
+
+            // Обновляем статус
+            document.getElementById('objectCount').textContent = window.objects.length;
+            updateStatus('success', 'Построение завершено! Объектов: ' + window.objects.length);
+
+            console.log('Построение завершено. Объектов:', window.objects.length);
+
+            // Отрисовываем все объекты
+            updateCanvas();
+        }
+
+        // Обновление канваса
+        function updateCanvas() {
+            if (window.renderer && window.objects) {
+                window.renderer.draw(window.objects);
+            }
+        }
+
+        // Управление масштабом
+        function zoomIn() {
+            window.currentScale *= 1.2;
+            updateStatus('info', 'Масштаб: ' + window.currentScale.toFixed(1) + 'x');
+            updateCanvas();
+        }
+
+        function zoomOut() {
+            window.currentScale /= 1.2;
+            updateStatus('info', 'Масштаб: ' + window.currentScale.toFixed(1) + 'x');
+            updateCanvas();
+        }
+
+        // Управление перемещением
+        function panLeft() {
+            window.offsetX -= 50;
+            updateStatus('info', 'Смещение X: ' + window.offsetX);
+            updateCanvas();
+        }
+
+        function panRight() {
+            window.offsetX += 50;
+            updateStatus('info', 'Смещение X: ' + window.offsetX);
+            updateCanvas();
+        }
+
+        function panUp() {
+            window.offsetY -= 50;
+            updateStatus('info', 'Смещение Y: ' + window.offsetY);
+            updateCanvas();
+        }
+
+        function panDown() {
+            window.offsetY += 50;
+            updateStatus('info', 'Смещение Y: ' + window.offsetY);
+            updateCanvas();
+        }
+
+        // Сброс вида
+        function resetView() {
+            window.currentScale = 1.0;
+            window.offsetX = 0;
+            window.offsetY = 0;
+            updateStatus('success', 'Вид сброшен');
+            updateCanvas();
+        }
+
+        // Обновление отображения масштаба
+        function updateScaleFactor() {
+            document.getElementById('scaleFactor').textContent = window.currentScale.toFixed(1);
+        }
+
+        // Очистка канваса
+        function clearCanvas() {
+            window.objects = [];
+            document.getElementById('objectCount').textContent = '0';
+            window.currentScale = 1.0;
+            window.offsetX = 0;
+            window.offsetY = 0;
+            updateStatus('info', 'Canvas очищен');
+            document.getElementById('scaleFactor').textContent = '1.0';
+            updateCanvas();
+        }
+
+        // Обновление статуса
+        function updateStatus(type, message) {
+            const statusDiv = document.getElementById('status');
+            const html = `<p>${message}</p>`;
+            if (type === 'error') {
+                // Добавляем div с ошибкой
+                const errorDiv = document.getElementById('errors');
+                errorDiv.innerHTML += `<p class="error">${message}</p>`;
+            }
+        }
+
+        // Экспорт в SVG
+        function exportSVG() {
+            // Создаём SVG с текущей геометрией
+            const svgNamespace = "http://www.w3.org/2000/svg";
+            const svg = document.createElementNS(svgNamespace, "svg");
+            svg.setAttribute("width", canvas.width);
+            svg.setAttribute("height", canvas.height);
+            svg.setAttribute("viewBox", `0 0 ${canvas.width} ${canvas.height}`);
+
+            const group = document.createElementNS(svgNamespace, "g");
+            group.setAttribute("transform", `translate(${window.offsetX},${window.offsetY}) scale(${window.currentScale})`);
+
+            // Добавляем все объекты в SVG
+            window.objects.forEach(obj => {
+                if (obj.type === 'D' && obj.center && obj.radius) {
+                    const ellipse = document.createElementNS(svgNamespace, "ellipse");
+                    ellipse.setAttribute("cx", obj.center.re);
+                    ellipse.setAttribute("cy", obj.center.im || 0);
+                    ellipse.setAttribute("rx", Math.abs(obj.radius.re));
+                    ellipse.setAttribute("ry", Math.abs(obj.radius.re));
+                    ellipse.setAttribute("fill", "none");
+                    ellipse.setAttribute("stroke", obj.attributes ? `rgb(${obj.attributes.red},${obj.attributes.green},${obj.attributes.blue})` : "black");
+                    ellipse.setAttribute("stroke-width", "2");
+                    group.appendChild(ellipse);
+                } else if (obj.type === 'P' && obj.x && obj.y) {
+                    const rect = document.createElementNS(svgNamespace, "rect");
+                    rect.setAttribute("x", obj.x.re - 2);
+                    rect.setAttribute("y", obj.y.re - 2);
+                    rect.setAttribute("width", "4");
+                    rect.setAttribute("height", "4");
+                    rect.setAttribute("fill", "red");
+                    group.appendChild(rect);
+                }
+            });
+
+            svg.appendChild(group);
+
+            // Создаём blob и скачиваем
+            const svgString = new XMLSerializer().serializeToString(svg);
+            const blob = new Blob([svgString], { type: "image/svg+xml" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "geometry.svg";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Проверка доступности классов
+        function checkClasses() {
+            const classes = ['Complex', 'GeometryCommands', 'GraphicalRenderer', 'Attributes'];
+            const statusDiv = document.getElementById('classStatus');
+
+            let allAvailable = true;
+            let results = [];
+
+            classes.forEach(className => {
+                if (typeof window[className] !== 'undefined') {
+                    results.push(`${className}: ✅`);
+                } else {
+                    results.push(`${className}: ❌`);
+                    allAvailable = false;
+                }
+            });
+
+            if (allAvailable) {
+                statusDiv.innerHTML = `<span class="success">${results.join(' ')}</span>`;
+                updateStatus('success', 'Все классы загружены успешно!');
+
+                // Автоматически запускаем построение
+                Main();
+            } else {
+                statusDiv.innerHTML = `<span class="error">${results.join(' ')}</span>`;
+                updateStatus('error', 'Ошибка загрузки классов!');
+            }
+        }
+
+        // Запуск при загрузке страницы
+        window.addEventListener('load', function() {
+            console.log('✅ Исправленная версия prog_1_adapted.html загружена');
+            console.log('Проверка классов...', typeof Complex, typeof GeometryCommands, typeof GraphicalRenderer);
+            checkClasses();
+        });
+    </script>
+</body>
+</html>

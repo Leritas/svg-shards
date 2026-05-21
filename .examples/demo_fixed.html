@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Исправленная Демо abc2_final.js</title>
+    <script src="abc2_final.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        canvas { border: 2px solid #333; background: white; display: block; margin: 20px auto; }
+        button { margin: 5px; padding: 8px 12px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px; }
+        button:hover { background: #45a049; }
+        .info { max-width: 800px; margin: 0 auto; padding: 15px; background: #f0f0f0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h1>Исправленная Демо abc2_final.js</h1>
+        <p>Эта версия исправляет проблемы с загрузкой классов и функций.</p>
+    </div>
+
+    <canvas id="geometryCanvas" width="600" height="400"></canvas>
+
+    <div class="info">
+        <h3>Управление:</h3>
+        <button onclick="createTestGeometry()">Создать тестовую геометрию</button>
+        <button onclick="clearCanvas()">Очистить</button>
+    </div>
+
+    <script>
+        // Ждём полной загрузки скрипта
+        window.addEventListener('load', function() {
+            console.log('abc2_final.js загружен');
+            console.log('Доступные классы:', typeof Complex, typeof GeometryCommands, typeof GeometryObject);
+
+            // Проверяем наличие всех необходимых классов
+            try {
+                // Тест 1: Проверка класса Complex
+                if (typeof Complex === 'undefined') {
+                    throw new Error('Класс Complex не определен!');
+                }
+
+                // Тест 2: Проверка класса GeometryCommands
+                if (typeof GeometryCommands === 'undefined') {
+                    throw new Error('Класс GeometryCommands не определен!');
+                }
+
+                // Тест 3: Проверка класса GraphicalRenderer
+                if (typeof GraphicalRenderer === 'undefined') {
+                    throw new Error('Класс GraphicalRenderer не определен!');
+                }
+
+                // Инициализация системы
+                const geometry = new GeometryCommands();
+                const screenConfig = geometry.createScreenConfig(0, 0, 600, 400);
+                const renderer = new GraphicalRenderer(geometry, screenConfig);
+                renderer.initialize(document.getElementById('geometryCanvas'));
+
+                // Глобальные переменные для функций
+                window.currentGeometry = geometry;
+                window.currentRenderer = renderer;
+                window.currentObjects = [];
+
+                console.log('Инициализация успешна!');
+
+                // Автоматически создаём тестовую геометрию
+                createTestGeometry();
+
+            } catch(error) {
+                console.error('Ошибка инициализации:', error);
+                document.querySelector('.info').innerHTML = `
+                    <h1>❌ Ошибка инициализации</h1>
+                    <p>${error.message}</p>
+                    <p><strong>Проверьте:</strong></p>
+                    <ul>
+                        <li>Файл abc2_final.js находится в той же директории</li>
+                        <li>Все классы экспортируются в глобальную область</li>
+                        <li>Консоль браузера без JavaScript ошибок</li>
+                    </ul>
+                `;
+            }
+        });
+
+        // Функция создания тестовой геометрии
+        function createTestGeometry() {
+            try {
+                if (!window.currentGeometry) {
+                    alert('Система не инициализирована!');
+                    return;
+                }
+
+                // Создаём несколько точек и линий
+                const att = new Attributes({ level: 0, checked: true, red: 0, green: 0, blue: 0 });
+
+                // Точка 1
+                const p1 = window.currentGeometry.createPoint(
+                    new Complex(100, 0),
+                    new Complex(100, 0),
+                    1,
+                    att
+                );
+
+                // Точка 2
+                const p2 = window.currentGeometry.createPoint(
+                    new Complex(300, 0),
+                    new Complex(200, 0),
+                    1,
+                    att
+                );
+
+                // Точка 3
+                const p3 = window.currentGeometry.createPoint(
+                    new Complex(200, 0),
+                    new Complex(300, 0),
+                    1,
+                    att
+                );
+
+                // Линия 1-2
+                const line1 = window.currentGeometry.createLine(
+                    p1.x, p1.y, 1,
+                    p2.x, p2.y, 1,
+                    false, "sobstv",
+                    att
+                );
+
+                // Линия 2-3
+                const line2 = window.currentGeometry.createLine(
+                    p2.x, p2.y, 1,
+                    p3.x, p3.y, 1,
+                    false, "sobstv",
+                    att
+                );
+
+                // Линия 3-1
+                const line3 = window.currentGeometry.createLine(
+                    p3.x, p3.y, 1,
+                    p1.x, p1.y, 1,
+                    false, "sobstv",
+                    att
+                );
+
+                // Сохраняем объекты
+                window.currentObjects = [p1, p2, p3, line1, line2, line3];
+
+                // Отрисовываем
+                window.currentRenderer.draw(window.currentObjects);
+
+                console.log('Тестовая геометрия создана:', window.currentObjects.length, 'объектов');
+                alert('Геометрия создана успешно!');
+
+            } catch(error) {
+                console.error('Ошибка создания геометрии:', error);
+                alert('Ошибка: ' + error.message);
+            }
+        }
+
+        // Функция очистки
+        function clearCanvas() {
+            try {
+                if (!window.currentRenderer) {
+                    alert('Система не инициализирована!');
+                    return;
+                }
+
+                window.currentObjects = [];
+                window.currentRenderer.draw([]);
+                console.log('Canvas очищен');
+            } catch(error) {
+                console.error('Ошибка очистки:', error);
+                alert('Ошибка: ' + error.message);
+            }
+        }
+
+        // Дополнительная диагностика
+        function diagnoseSystem() {
+            console.log('=== Диагностика системы ===');
+            console.log('Complex:', typeof Complex);
+            console.log('GeometryCommands:', typeof GeometryCommands);
+            console.log('GraphicalRenderer:', typeof GraphicalRenderer);
+            console.log('Attributes:', typeof Attributes);
+            console.log('Point:', typeof Point);
+            console.log('Line:', typeof Line);
+            console.log('Arc:', typeof Arc);
+
+            // Проверка экспорта
+            if (typeof Module !== 'undefined') {
+                console.log('Node.js модуль Module:', typeof Module);
+            }
+            if (typeof window !== 'undefined') {
+                console.log('Браузер экспорт окна:', Object.keys(window).filter(key => key.includes('Complex') || key.includes('Geometry')));
+            }
+        }
+
+        // Вызываем диагностику
+        setTimeout(diagnoseSystem, 100);
+
+    </script>
+</body>
+</html>

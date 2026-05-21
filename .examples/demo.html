@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>abc2_final.js Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        #container {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+        #controls {
+            width: 300px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+        #canvas-container {
+            flex: 1;
+            border: 2px solid #333;
+            background: white;
+        }
+        button {
+            margin: 5px 0;
+            padding: 8px 12px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>abc2_final.js Demo - Современная геометрическая система</h1>
+
+    <div id="container">
+        <div id="controls">
+            <h3>Геометрические операции</h3>
+            <button onclick="createSquare()">Создать квадрат</button>
+            <button onclick="createCircle()">Создать окружность</button>
+            <button onclick="createIntersection()">Пересечение линий</button>
+            <button onclick="createMidpoint()">Середина отрезка</button>
+            <button onclick="createParallel()">Параллельная линия</button>
+
+            <h3>Управление</h3>
+            <button onclick="clearCanvas()">Очистить</button>
+            <button onclick="saveProject()">Сохранить проект</button>
+            <button onclick="loadProject()">Загрузить проект</button>
+
+            <h3>Статистика</h3>
+            <div id="stats">
+                <p>Объектов: <span id="objectCount">0</span></p>
+                <p>Комплексных чисел: <span id="complexCount">0</span></p>
+            </div>
+        </div>
+
+        <div id="canvas-container">
+            <canvas id="geometryCanvas"></canvas>
+        </div>
+    </div>
+
+    <script src="abc2_final.js"></script>
+    <script>
+        // Пример использования abc2_final.js в браузере
+
+        // Инициализация системы
+        const geometry = new GeometryCommands();
+        const constructive = new ConstructiveCommands(geometry);
+        const projGeom = new ProjectiveGeometry(geometry);
+
+        // Настройка экрана
+        const screenConfig = geometry.createScreenConfig(0, 0, 600, 500);
+
+        // Инициализация рендерера
+        const renderer = new GraphicalRenderer(geometry, screenConfig);
+        renderer.initialize(document.getElementById('geometryCanvas'));
+
+        // Инициализация UI менеджера
+        const fileManager = new FileManager(geometry);
+        const uiManager = new UIManager(geometry, renderer, fileManager);
+        uiManager.initializeCanvas(document.getElementById('canvas-container'));
+
+        // Создание атрибутов по умолчанию
+        const defaultAtt = new Attributes({
+            level: 0,
+            checked: true,
+            red: 0,
+            green: 0,
+            blue: 0
+        });
+
+        let objectCounter = 0;
+
+        function updateStats() {
+            document.getElementById('objectCount').textContent =
+                fileManager.getAllObjects().length;
+        }
+
+        function createSquare() {
+            // Создаем квадрат
+            const p1 = geometry.createPoint(
+                new Complex(50, 0),
+                new Complex(50, 0),
+                1,
+                defaultAtt
+            );
+
+            const p2 = geometry.createPoint(
+                new Complex(150, 0),
+                new Complex(50, 0),
+                1,
+                defaultAtt
+            );
+
+            const p3 = geometry.createPoint(
+                new Complex(150, 0),
+                new Complex(150, 0),
+                1,
+                defaultAtt
+            );
+
+            const p4 = geometry.createPoint(
+                new Complex(50, 0),
+                new Complex(150, 0),
+                1,
+                defaultAtt
+            );
+
+            // Создаем линии между точками
+            const line1 = geometry.createLine(p1.x, p1.y, 1, p2.x, p2.y, 1, false, 'sobstv', defaultAtt);
+            const line2 = geometry.createLine(p2.x, p2.y, 1, p3.x, p3.y, 1, false, 'sobstv', defaultAtt);
+            const line3 = geometry.createLine(p3.x, p3.y, 1, p4.x, p4.y, 1, false, 'sobstv', defaultAtt);
+            const line4 = geometry.createLine(p4.x, p4.y, 1, p1.x, p1.y, 1, false, 'sobstv', defaultAtt);
+
+            // Добавляем объекты в менеджер
+            fileManager.addObject(p1);
+            fileManager.addObject(p2);
+            fileManager.addObject(p3);
+            fileManager.addObject(p4);
+            fileManager.addObject(line1);
+            fileManager.addObject(line2);
+            fileManager.addObject(line3);
+            fileManager.addObject(line4);
+
+            objectCounter += 8;
+            updateStats();
+            uiManager.refresh();
+        }
+
+        function createCircle() {
+            // Создаем окружность
+            const center = new Complex(200, 200);
+            const radius = new Complex(50, 0);
+
+            const arc = geometry.createArc(
+                center,
+                radius,
+                new Complex(250, 200),
+                new Complex(200, 0),
+                new Complex(250, 200),
+                new Complex(200, 0),
+                defaultAtt
+            );
+
+            fileManager.addObject(arc);
+            objectCounter++;
+            updateStats();
+            uiManager.refresh();
+        }
+
+        function createIntersection() {
+            // Создаем две пересекающиеся линии
+            const line1 = geometry.createLine(
+                new Complex(300, 50),
+                new Complex(50, 0),
+                1,
+                new Complex(500, 450),
+                new Complex(400, 0),
+                1,
+                false,
+                'sobstv',
+                defaultAtt
+            );
+
+            const line2 = geometry.createLine(
+                new Complex(300, 450),
+                new Complex(50, 0),
+                1,
+                new Complex(500, 50),
+                new Complex(400, 0),
+                1,
+                false,
+                'sobstv',
+                defaultAtt
+            );
+
+            // Находим пересечение
+            const intersection = geometry.lineIntersection(line1, line2);
+
+            fileManager.addObject(line1);
+            fileManager.addObject(line2);
+            if (intersection) {
+                fileManager.addObject(intersection);
+                objectCounter += 3;
+            } else {
+                objectCounter += 2;
+            }
+
+            updateStats();
+            uiManager.refresh();
+        }
+
+        function createMidpoint() {
+            // Создаем отрезок
+            const p1 = geometry.createPoint(
+                new Complex(350, 100),
+                new Complex(100, 0),
+                1,
+                defaultAtt
+            );
+
+            const p2 = geometry.createPoint(
+                new Complex(450, 200),
+                new Complex(300, 0),
+                1,
+                defaultAtt
+            );
+
+            // Находим середину
+            const result = {};
+            constructive.EExecPP(result, p1, p2, defaultAtt, 1, 1);
+
+            // Создаем линию
+            const line = geometry.createLine(p1.x, p1.y, 1, p2.x, p2.y, 1, false, 'sobstv', defaultAtt);
+
+            fileManager.addObject(p1);
+            fileManager.addObject(p2);
+            fileManager.addObject(line);
+            if (result instanceof Point) {
+                fileManager.addObject(result);
+                objectCounter += 4;
+            } else {
+                objectCounter += 3;
+            }
+
+            updateStats();
+            uiManager.refresh();
+        }
+
+        function createParallel() {
+            // Создаем исходную линию и точку
+            const line = geometry.createLine(
+                new Complex(50, 400),
+                new Complex(50, 0),
+                1,
+                new Complex(450, 400),
+                new Complex(50, 0),
+                1,
+                false,
+                'sobstv',
+                defaultAtt
+            );
+
+            const point = geometry.createPoint(
+                new Complex(250, 350),
+                new Complex(250, 0),
+                1,
+                defaultAtt
+            );
+
+            // Создаем параллельную линию через точку
+            const parallel = geometry.parallelLine(line, 50);
+
+            fileManager.addObject(line);
+            fileManager.addObject(point);
+            if (parallel) {
+                fileManager.addObject(parallel);
+                objectCounter += 3;
+            } else {
+                objectCounter += 2;
+            }
+
+            updateStats();
+            uiManager.refresh();
+        }
+
+        function clearCanvas() {
+            fileManager.clearProject();
+            objectCounter = 0;
+            updateStats();
+            uiManager.refresh();
+        }
+
+        function saveProject() {
+            const filename = `geometry_project_${Date.now()}.geo`;
+            const success = fileManager.saveToFile(filename);
+            if (success) {
+                alert(`Проект сохранен как ${filename}`);
+            } else {
+                alert('Ошибка при сохранении проекта');
+            }
+        }
+
+        function loadProject() {
+            uiManager.openFileDialog();
+        }
+
+        // Первичная отрисовка
+        updateStats();
+        renderer.draw(fileManager.getAllObjects());
+    </script>
+</body>
+</html>
