@@ -1,3 +1,6 @@
 node_modules/
 dist/
 plugins/svg-highlighter/demo/vendor/
+
+.examples
+.idea

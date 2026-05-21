@@ -58,4 +58,4 @@ Opens at `http://localhost:3000/` — builds libs, copies them into `demo/vendor
 
 ## License
 
-MIT
+[MIT](./LICENSE)
