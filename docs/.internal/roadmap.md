@@ -46,6 +46,6 @@ Pick items to implement incrementally. Not committed — priority TBD.
 
 ## Infrastructure
 
-- [ ] CI/CD (GitHub Actions: lint, test, build)
-- [ ] npm publish workflow
+- [x] CI/CD (GitHub Actions: lint, test, build)
+- [x] npm publish workflow — see [publishing.md](./publishing.md)
 - [ ] Dual CJS/ESM package if needed

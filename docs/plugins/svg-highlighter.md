@@ -17,14 +17,14 @@ Package name: `@svg-shards/highlighter`
 import { SvgHighlighter } from '@svg-shards/highlighter';
 
 const highlighter = SvgHighlighter.create(svgElement, {
-  highlightColor: '#ff6600',
-  strokeWidthBoost: 2,
-  container: '#viewport',  // optional viewport wrapper
+    highlightColor: '#ff6600',
+    strokeWidthBoost: 2,
+    container: '#viewport', // optional viewport wrapper
 });
 
 // List all shards (for sidebar UI)
-highlighter.getElementList().forEach(entry => {
-  console.log(entry.label, entry.type);
+highlighter.getElementList().forEach((entry) => {
+    console.log(entry.label, entry.type);
 });
 
 // Highlight (click same index again to clear)
@@ -43,24 +43,24 @@ highlighter.getHighlightMode(); // 'fill' | 'outline'
 
 ## Options
 
-| Option | Default | Description |
-| ------ | ------- | ----------- |
-| `highlightColor` | `#ff6600` | Fill and stroke color when highlighted |
-| `strokeWidthBoost` | `2` | Added to current stroke-width |
-| `highlightMode` | `'fill'` | `'fill'` — solid color, `'outline'` — contour stroke only |
-| `container` | — | CSS selector or element for viewport |
+| Option             | Default   | Description                                               |
+| ------------------ | --------- | --------------------------------------------------------- |
+| `highlightColor`   | `#ff6600` | Fill and stroke color when highlighted                    |
+| `strokeWidthBoost` | `2`       | Added to current stroke-width                             |
+| `highlightMode`    | `'fill'`  | `'fill'` — solid color, `'outline'` — contour stroke only |
+| `container`        | —         | CSS selector or element for viewport                      |
 
 ## Viewport controls
 
 When `container` is provided, a `ViewportController` is attached:
 
-| Action | API |
-| ------ | --- |
+| Action      | API                                       |
+| ----------- | ----------------------------------------- |
 | Zoom in/out | `viewport.zoomIn()`, `viewport.zoomOut()` |
-| Rotate +90° | `viewport.rotate()` |
-| Reset | `viewport.reset()` |
-| Mouse wheel | Zoom |
-| Drag | Pan |
+| Rotate +90° | `viewport.rotate()`                       |
+| Reset       | `viewport.reset()`                        |
+| Mouse wheel | Zoom                                      |
+| Drag        | Pan                                       |
 
 Access via `highlighter.getViewport()`.
 

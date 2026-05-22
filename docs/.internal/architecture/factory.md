@@ -12,22 +12,23 @@ Location: `src/factories/ElementFactory.ts`
 
 DOM tag names don't always match map keys:
 
-| DOM tag | Map key |
-| ------- | ------- |
-| `rect` | `rect` |
+| DOM tag  | Map key  |
+| -------- | -------- |
+| `rect`   | `rect`   |
 | `circle` | `circle` |
-| `g` | `group` |
-| … | … |
+| `g`      | `group`  |
+| …        | …        |
 
 Defined in `TAG_TO_MAP_KEY` (`src/core/types.ts`).
 
 ## Parsing strategy
 
 ```typescript
-svgNode.querySelectorAll('*')  // all descendants, flat
+svgNode.querySelectorAll('*'); // all descendants, flat
 ```
 
 **Implications:**
+
 - Nested elements appear in type arrays (e.g. `<circle>` inside `<g>` is in `elements.circle`)
 - `GroupElement.children` is NOT auto-populated on parse (v2)
 - Order within each type array follows DOM document order

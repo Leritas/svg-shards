@@ -21,11 +21,11 @@ SvgElement (abstract)
 
 Classes override `moveTo` / `resize` when base x/y semantics don't apply:
 
-| Class | moveTo sets | resize sets |
-| ----- | ----------- | ----------- |
-| CircleElement | cx, cy | r |
-| EllipseElement | cx, cy | rx (+ optional ry) |
-| LineElement | translates both endpoints | scales length |
+| Class          | moveTo sets               | resize sets        |
+| -------------- | ------------------------- | ------------------ |
+| CircleElement  | cx, cy                    | r                  |
+| EllipseElement | cx, cy                    | rx (+ optional ry) |
+| LineElement    | translates both endpoints | scales length      |
 
 ## xlink:href fallback
 

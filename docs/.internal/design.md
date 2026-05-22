@@ -28,8 +28,8 @@ const svg = createSvgShards.fromElement(svgRef);
 const shapes = svg.elements;
 // { rect: RectElement[], circle: CircleElement[], path: PathElement[], group: GroupElement[], ... }
 
-svg.getAll();              // flat list with labels
-svg.getById('my-circle');  // find by id
+svg.getAll(); // flat list with labels
+svg.getById('my-circle'); // find by id
 ```
 
 ### Visual state (highlight support)

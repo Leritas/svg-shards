@@ -12,38 +12,38 @@ import type { UseElement } from '../elements/UseElement';
 export type SvgPrimitiveElement = SVGSVGElement | SVGElement;
 
 export enum SvgElementType {
-  SVG = 'svg',
-  RECT = 'rect',
-  CIRCLE = 'circle',
-  ELLIPSE = 'ellipse',
-  LINE = 'line',
-  POLYGON = 'polygon',
-  POLYLINE = 'polyline',
-  PATH = 'path',
-  TEXT = 'text',
-  IMAGE = 'image',
-  GROUP = 'g',
-  USE = 'use',
-  DEFS = 'defs',
-  CLIP_PATH = 'clipPath',
-  MASK = 'mask',
-  PATTERN = 'pattern',
-  SYMBOL = 'symbol',
-  MARKER = 'marker',
+    SVG = 'svg',
+    RECT = 'rect',
+    CIRCLE = 'circle',
+    ELLIPSE = 'ellipse',
+    LINE = 'line',
+    POLYGON = 'polygon',
+    POLYLINE = 'polyline',
+    PATH = 'path',
+    TEXT = 'text',
+    IMAGE = 'image',
+    GROUP = 'g',
+    USE = 'use',
+    DEFS = 'defs',
+    CLIP_PATH = 'clipPath',
+    MASK = 'mask',
+    PATTERN = 'pattern',
+    SYMBOL = 'symbol',
+    MARKER = 'marker',
 }
 
 export interface SvgElementMap {
-  rect: RectElement[];
-  circle: CircleElement[];
-  ellipse: EllipseElement[];
-  line: LineElement[];
-  polygon: PolygonElement[];
-  polyline: PolylineElement[];
-  path: PathElement[];
-  text: TextElement[];
-  image: ImageElement[];
-  group: GroupElement[];
-  use: UseElement[];
+    rect: RectElement[];
+    circle: CircleElement[];
+    ellipse: EllipseElement[];
+    line: LineElement[];
+    polygon: PolygonElement[];
+    polyline: PolylineElement[];
+    path: PathElement[];
+    text: TextElement[];
+    image: ImageElement[];
+    group: GroupElement[];
+    use: UseElement[];
 }
 
 export type SvgElementTypeKey = keyof SvgElementMap;
@@ -51,53 +51,53 @@ export type SvgElementTypeKey = keyof SvgElementMap;
 export type SvgElementUnion = SvgElementMap[SvgElementTypeKey][number];
 
 export interface SvgElementEntry {
-  type: SvgElementTypeKey;
-  element: SvgElementUnion;
-  label: string;
+    type: SvgElementTypeKey;
+    element: SvgElementUnion;
+    label: string;
 }
 
 export interface Point {
-  x: number;
-  y: number;
+    x: number;
+    y: number;
 }
 
 export interface Size {
-  width: number;
-  height: number;
+    width: number;
+    height: number;
 }
 
 export interface BoundingBox {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
 }
 
 export interface VisualState {
-  fill: string | null;
-  stroke: string | null;
-  strokeWidth: string | null;
-  opacity: string | null;
+    fill: string | null;
+    stroke: string | null;
+    strokeWidth: string | null;
+    opacity: string | null;
 }
 
 export interface HighlightOptions {
-  fill?: string;
-  stroke?: string;
-  strokeWidth?: number;
-  strokeWidthBoost?: number;
-  opacity?: number;
+    fill?: string;
+    stroke?: string;
+    strokeWidth?: number;
+    strokeWidthBoost?: number;
+    opacity?: number;
 }
 
 export const TAG_TO_MAP_KEY: Record<string, SvgElementTypeKey> = {
-  rect: 'rect',
-  circle: 'circle',
-  ellipse: 'ellipse',
-  line: 'line',
-  polygon: 'polygon',
-  polyline: 'polyline',
-  path: 'path',
-  text: 'text',
-  image: 'image',
-  g: 'group',
-  use: 'use',
+    rect: 'rect',
+    circle: 'circle',
+    ellipse: 'ellipse',
+    line: 'line',
+    polygon: 'polygon',
+    polyline: 'polyline',
+    path: 'path',
+    text: 'text',
+    image: 'image',
+    g: 'group',
+    use: 'use',
 };

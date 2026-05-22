@@ -1,7 +1,9 @@
 {
   "name": "@svg-shards/highlighter",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "SVG element highlighter plugin for svg-shards",
+  "author": "Leritas <i@leritas.ru>",
+  "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,14 +13,38 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
-  "scripts": {
-    "build": "tsc"
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Leritas/svg-shards.git",
+    "directory": "plugins/svg-highlighter"
   },
-  "dependencies": {
-    "svg-shards": "file:../.."
+  "bugs": {
+    "url": "https://github.com/Leritas/svg-shards/issues"
+  },
+  "homepage": "https://github.com/Leritas/svg-shards#readme",
+  "keywords": [
+    "svg",
+    "shards",
+    "highlighter",
+    "typescript",
+    "plugin"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "svg-shards": "^1.0.0"
   },
   "devDependencies": {
+    "svg-shards": "file:../..",
     "typescript": "^5.3.3"
   }
 }

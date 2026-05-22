@@ -17,16 +17,16 @@ const svg = createSvgShards.fromElement(document.querySelector('#my-svg'));
 if (!svg) throw new Error('No SVG found');
 
 // Access shards by type
-svg.elements.rect.forEach(rect => {
-  rect.fill = '#4a90d9';
-  rect.width = 200;
+svg.elements.rect.forEach((rect) => {
+    rect.fill = '#4a90d9';
+    rect.width = 200;
 });
 
 svg.elements.circle[0].radius = 50;
 svg.elements.circle[0].moveTo(100, 100);
 
 // Flat list with labels
-svg.getAll().forEach(entry => console.log(entry.label, entry.type));
+svg.getAll().forEach((entry) => console.log(entry.label, entry.type));
 ```
 
 ## Features
@@ -39,14 +39,14 @@ svg.getAll().forEach(entry => console.log(entry.label, entry.type));
 
 ## Scripts
 
-| Command | Description |
-| ------- | ----------- |
-| `npm run build` | Compile core library |
-| `npm run build:all` | Compile core + highlighter plugin |
-| `npm run dev` | Watch mode |
-| `npm run test` | Run tests (Vitest + jsdom) |
-| `npm run lint` | ESLint |
-Opens at `http://localhost:3000/` — builds libs, copies them into `demo/vendor/`, then serves the demo folder.
+| Command             | Description                                     |
+| ------------------- | ----------------------------------------------- |
+| `npm run build`     | Compile core library                            |
+| `npm run build:all` | Compile core + highlighter plugin               |
+| `npm run dev`       | Watch mode                                      |
+| `npm run test`      | Run tests (Vitest + jsdom)                      |
+| `npm run lint`      | ESLint                                          |
+| `npm run demo`      | Build and open demo at `http://localhost:3000/` |
 
 ## Documentation
 

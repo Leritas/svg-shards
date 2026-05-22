@@ -1,0 +1,127 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'highlighter-v[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Package to publish
+        required: true
+        type: choice
+        options:
+          - svg-shards
+          - highlighter
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      package: ${{ steps.resolve.outputs.package }}
+      working-directory: ${{ steps.resolve.outputs.working-directory }}
+      package-json-path: ${{ steps.resolve.outputs.package-json-path }}
+      version: ${{ steps.resolve.outputs.version }}
+      verify-tag: ${{ steps.resolve.outputs.verify-tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: resolve
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            PKG="${{ github.event.inputs.package }}"
+            echo "verify-tag=false" >> "$GITHUB_OUTPUT"
+          else
+            REF="${{ github.ref_name }}"
+            if [[ "$REF" == highlighter-v* ]]; then
+              PKG="highlighter"
+            else
+              PKG="svg-shards"
+            fi
+            echo "verify-tag=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          case "$PKG" in
+            svg-shards)
+              WORKDIR="."
+              PKG_JSON="package.json"
+              ;;
+            highlighter)
+              WORKDIR="plugins/svg-highlighter"
+              PKG_JSON="plugins/svg-highlighter/package.json"
+              ;;
+            *)
+              echo "Unknown package: $PKG"
+              exit 1
+              ;;
+          esac
+
+          VERSION="$(node -p "require('./$PKG_JSON').version")"
+
+          echo "package=$PKG" >> "$GITHUB_OUTPUT"
+          echo "working-directory=$WORKDIR" >> "$GITHUB_OUTPUT"
+          echo "package-json-path=$PKG_JSON" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: resolve
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: https://registry.npmjs.org
+
+      - name: Use npm 11 for Trusted Publishing
+        run: |
+          NPM_PREFIX="$RUNNER_TEMP/npm-publish-cli"
+          mkdir -p "$NPM_PREFIX"
+          npm install -g npm@11.14.0 --prefix "$NPM_PREFIX"
+          echo "$NPM_PREFIX/bin" >> "$GITHUB_PATH"
+          "$NPM_PREFIX/bin/npm" --version
+
+      - name: Install dependencies (registry.npmjs.org)
+        run: npm ci
+        env:
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+
+      - name: Verify git tag matches package.json version
+        if: needs.resolve.outputs.verify-tag == 'true'
+        run: |
+          REF="${{ github.ref_name }}"
+          if [[ "$REF" == highlighter-v* ]]; then
+            TAG="${REF#highlighter-v}"
+          else
+            TAG="${REF#v}"
+          fi
+          PKG="${{ needs.resolve.outputs.version }}"
+          if [ "$PKG" != "$TAG" ]; then
+            echo "package.json version ($PKG) does not match tag $REF (expected highlighter-v$PKG or v$PKG)"
+            exit 1
+          fi
+
+      - name: Build core library
+        if: needs.resolve.outputs.package == 'svg-shards'
+        run: npm run build
+
+      - name: Build core and highlighter
+        if: needs.resolve.outputs.package == 'highlighter'
+        run: |
+          npm run build
+          npm run build --prefix plugins/svg-highlighter
+
+      - name: Publish svg-shards to npm
+        if: needs.resolve.outputs.package == 'svg-shards'
+        run: npm publish
+
+      - name: Publish @svg-shards/highlighter to npm
+        if: needs.resolve.outputs.package == 'highlighter'
+        working-directory: plugins/svg-highlighter
+        run: npm publish --access public

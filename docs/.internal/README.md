@@ -4,14 +4,15 @@ Developer-facing documentation for contributors and AI agents.
 
 ## Index
 
-| Document | Purpose |
-| -------- | ------- |
-| [design.md](./design.md) | Original vision, v1 scope, design decisions |
-| [roadmap.md](./roadmap.md) | Future ideas backlog |
-| [architecture/overview.md](./architecture/overview.md) | Layer diagram, data flow, naming |
-| [architecture/core.md](./architecture/core.md) | SvgElement, SvgContainer, types |
-| [architecture/factory.md](./architecture/factory.md) | Parsing, tag mapping, refresh |
-| [architecture/elements.md](./architecture/elements.md) | Element class hierarchy |
+| Document                                               | Purpose                                            |
+| ------------------------------------------------------ | -------------------------------------------------- |
+| [design.md](./design.md)                               | Original vision, v1 scope, design decisions        |
+| [roadmap.md](./roadmap.md)                             | Future ideas backlog                               |
+| [publishing.md](./publishing.md)                       | npm release runbook (tags, CI, Trusted Publishing) |
+| [architecture/overview.md](./architecture/overview.md) | Layer diagram, data flow, naming                   |
+| [architecture/core.md](./architecture/core.md)         | SvgElement, SvgContainer, types                    |
+| [architecture/factory.md](./architecture/factory.md)   | Parsing, tag mapping, refresh                      |
+| [architecture/elements.md](./architecture/elements.md) | Element class hierarchy                            |
 
 ## Quick reference
 
@@ -19,9 +20,9 @@ Developer-facing documentation for contributors and AI agents.
 import { createSvgShards } from 'svg-shards';
 
 const svg = createSvgShards.fromElement(svgRef);
-svg.getAll();           // flat shard list with labels
-svg.getById('my-id');   // find by id
-svg.elements.rect[0];   // typed access by kind
+svg.getAll(); // flat shard list with labels
+svg.getById('my-id'); // find by id
+svg.elements.rect[0]; // typed access by kind
 ```
 
 ## Conventions

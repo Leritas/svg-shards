@@ -1,26 +1,26 @@
 import { SvgElement } from '../core/SvgElement';
 
 export class PathElement extends SvgElement {
-  private _geometry: SVGGeometryElement;
+    private _geometry: SVGGeometryElement;
 
-  constructor(htmlNode: SVGPathElement) {
-    super(htmlNode);
-    this._geometry = htmlNode;
-  }
+    constructor(htmlNode: SVGPathElement) {
+        super(htmlNode);
+        this._geometry = htmlNode;
+    }
 
-  get d(): string {
-    return this.htmlNode.getAttribute('d') || '';
-  }
+    get d(): string {
+        return this.htmlNode.getAttribute('d') || '';
+    }
 
-  set d(value: string) {
-    this.htmlNode.setAttribute('d', value);
-  }
+    set d(value: string) {
+        this.htmlNode.setAttribute('d', value);
+    }
 
-  get pathLength(): number {
-    return this._geometry.getTotalLength();
-  }
+    get pathLength(): number {
+        return this._geometry.getTotalLength();
+    }
 
-  getPointAtLength(distance: number): DOMPoint {
-    return this._geometry.getPointAtLength(distance);
-  }
+    getPointAtLength(distance: number): DOMPoint {
+        return this._geometry.getPointAtLength(distance);
+    }
 }

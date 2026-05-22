@@ -8,42 +8,42 @@ const FIXTURE = `
 </svg>`;
 
 describe('Visual state helpers', () => {
-  let svg: SVGSVGElement;
+    let svg: SVGSVGElement;
 
-  afterEach(() => {
-    svg?.remove();
-  });
-
-  it('captures and restores visual state', () => {
-    svg = parseSvg(FIXTURE);
-    const container = createSvgShards.fromElement(svg)!;
-    const circle = container.getByType('circle')[0];
-
-    const original = circle.captureVisualState();
-    circle.fill = '#fff';
-    circle.strokeWidth = 10;
-    circle.applyVisualState(original);
-
-    expect(circle.fill).toBe('#000');
-    expect(circle.strokeWidth).toBe(2);
-  });
-
-  it('applyHighlight returns previous state and clearHighlight restores it', () => {
-    svg = parseSvg(FIXTURE);
-    const container = createSvgShards.fromElement(svg)!;
-    const circle = container.getByType('circle')[0];
-
-    const previous = circle.applyHighlight({
-      fill: '#f60',
-      stroke: '#f60',
-      strokeWidthBoost: 3,
+    afterEach(() => {
+        svg?.remove();
     });
 
-    expect(circle.fill).toBe('#f60');
-    expect(circle.strokeWidth).toBe(5);
+    it('captures and restores visual state', () => {
+        svg = parseSvg(FIXTURE);
+        const container = createSvgShards.fromElement(svg)!;
+        const circle = container.getByType('circle')[0];
 
-    circle.clearHighlight(previous);
-    expect(circle.fill).toBe('#000');
-    expect(circle.strokeWidth).toBe(2);
-  });
+        const original = circle.captureVisualState();
+        circle.fill = '#fff';
+        circle.strokeWidth = 10;
+        circle.applyVisualState(original);
+
+        expect(circle.fill).toBe('#000');
+        expect(circle.strokeWidth).toBe(2);
+    });
+
+    it('applyHighlight returns previous state and clearHighlight restores it', () => {
+        svg = parseSvg(FIXTURE);
+        const container = createSvgShards.fromElement(svg)!;
+        const circle = container.getByType('circle')[0];
+
+        const previous = circle.applyHighlight({
+            fill: '#f60',
+            stroke: '#f60',
+            strokeWidthBoost: 3,
+        });
+
+        expect(circle.fill).toBe('#f60');
+        expect(circle.strokeWidth).toBe(5);
+
+        circle.clearHighlight(previous);
+        expect(circle.fill).toBe('#000');
+        expect(circle.strokeWidth).toBe(2);
+    });
 });

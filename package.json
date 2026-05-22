@@ -1,7 +1,8 @@
 {
   "name": "svg-shards",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "TypeScript OOP library for working with SVG as independent shards",
+  "author": "Leritas <i@leritas.ru>",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +12,19 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Leritas/svg-shards.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Leritas/svg-shards/issues"
+  },
+  "homepage": "https://github.com/Leritas/svg-shards#readme",
   "scripts": {
     "build": "tsc",
     "build:all": "npm run build && npm run build --prefix plugins/svg-highlighter",
@@ -19,6 +32,8 @@
     "lint": "eslint src tests vitest.config.ts plugins/svg-highlighter/src",
     "lint:fix": "eslint src tests vitest.config.ts plugins/svg-highlighter/src --fix",
     "format": "prettier --write \"**/*.{ts,js,json,md,html,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,json,md,html,css}\"",
+    "prepublishOnly": "npm run build && npm test && npm run lint && npm run format:check",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -34,7 +49,6 @@
     "dom",
     "visualization"
   ],
-  "author": "",
   "license": "MIT",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.0.0",

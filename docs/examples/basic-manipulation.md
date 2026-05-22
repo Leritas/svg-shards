@@ -8,7 +8,7 @@ import { createSvgShards } from 'svg-shards';
 const svg = createSvgShards.fromElement(document.querySelector('#art'))!;
 
 svg.elements.rect.forEach((rect, i) => {
-  rect.fill = `hsl(${i * 60}, 70%, 60%)`;
+    rect.fill = `hsl(${i * 60}, 70%, 60%)`;
 });
 ```
 
@@ -17,8 +17,8 @@ svg.elements.rect.forEach((rect, i) => {
 ```typescript
 const box = svg.getById('panel');
 if (box) {
-  box.moveTo(100, 50);
-  box.resize(200, 120);
+    box.moveTo(100, 50);
+    box.resize(200, 120);
 }
 
 const dot = svg.elements.circle[0];
@@ -39,8 +39,8 @@ console.log('Midpoint:', mid.x, mid.y);
 
 ```typescript
 svg.getAll().forEach(({ type, label, element }) => {
-  console.log(`${label} (${type})`);
-  element.opacity = 0.9;
+    console.log(`${label} (${type})`);
+    element.opacity = 0.9;
 });
 ```
 
@@ -49,8 +49,8 @@ svg.getAll().forEach(({ type, label, element }) => {
 ```typescript
 const shard = svg.getById('sun')!;
 const previous = shard.applyHighlight({
-  fill: '#ffd700',
-  strokeWidthBoost: 3,
+    fill: '#ffd700',
+    strokeWidthBoost: 3,
 });
 
 setTimeout(() => shard.clearHighlight(previous), 2000);

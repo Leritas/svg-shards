@@ -17,41 +17,41 @@ const FIXTURE = `
 </svg>`;
 
 describe('ElementFactory', () => {
-  let svg: SVGSVGElement;
+    let svg: SVGSVGElement;
 
-  afterEach(() => {
-    svg?.remove();
-  });
+    afterEach(() => {
+        svg?.remove();
+    });
 
-  it('parses all supported element types', () => {
-    svg = parseSvg(FIXTURE);
-    const map = ElementFactory.parseSvgElement(svg);
+    it('parses all supported element types', () => {
+        svg = parseSvg(FIXTURE);
+        const map = ElementFactory.parseSvgElement(svg);
 
-    expect(map.rect).toHaveLength(1);
-    expect(map.circle).toHaveLength(2);
-    expect(map.ellipse).toHaveLength(1);
-    expect(map.line).toHaveLength(1);
-    expect(map.polygon).toHaveLength(1);
-    expect(map.polyline).toHaveLength(1);
-    expect(map.path).toHaveLength(1);
-    expect(map.text).toHaveLength(1);
-    expect(map.group).toHaveLength(1);
-    expect(map.use).toHaveLength(1);
-  });
+        expect(map.rect).toHaveLength(1);
+        expect(map.circle).toHaveLength(2);
+        expect(map.ellipse).toHaveLength(1);
+        expect(map.line).toHaveLength(1);
+        expect(map.polygon).toHaveLength(1);
+        expect(map.polyline).toHaveLength(1);
+        expect(map.path).toHaveLength(1);
+        expect(map.text).toHaveLength(1);
+        expect(map.group).toHaveLength(1);
+        expect(map.use).toHaveLength(1);
+    });
 
-  it('indexes groups under group key (not g)', () => {
-    svg = parseSvg(FIXTURE);
-    const map = ElementFactory.parseSvgElement(svg);
+    it('indexes groups under group key (not g)', () => {
+        svg = parseSvg(FIXTURE);
+        const map = ElementFactory.parseSvgElement(svg);
 
-    expect(map.group[0].id).toBe('group1');
-  });
+        expect(map.group[0].id).toBe('group1');
+    });
 
-  it('wraps nodes in typed classes', () => {
-    svg = parseSvg(FIXTURE);
-    const map = ElementFactory.parseSvgElement(svg);
+    it('wraps nodes in typed classes', () => {
+        svg = parseSvg(FIXTURE);
+        const map = ElementFactory.parseSvgElement(svg);
 
-    expect(map.rect[0].width).toBe(40);
-    expect(map.circle[0].r).toBe(15);
-    expect(map.circle[0].radius).toBe(15);
-  });
+        expect(map.rect[0].width).toBe(40);
+        expect(map.circle[0].r).toBe(15);
+        expect(map.circle[0].radius).toBe(15);
+    });
 });

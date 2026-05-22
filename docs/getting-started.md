@@ -17,8 +17,8 @@ const svgElement = document.querySelector('#diagram');
 const svg = createSvgShards.fromElement(svgElement);
 
 if (!svg) {
-  console.error('Element is not inside an SVG');
-  return;
+    console.error('Element is not inside an SVG');
+    return;
 }
 
 // Access shards by type
@@ -26,8 +26,8 @@ console.log(svg.elements.circle.length);
 console.log(svg.elements.path[0].d);
 
 // Flat list with labels (for UI sidebars, etc.)
-svg.getAll().forEach(entry => {
-  console.log(entry.label, entry.type);
+svg.getAll().forEach((entry) => {
+    console.log(entry.label, entry.type);
 });
 ```
 
@@ -44,7 +44,7 @@ rect.moveTo(50, 50);
 rect.resize(120, 80);
 
 const circle = svg.elements.circle[0];
-circle.radius = 40;   // alias for circle.r
+circle.radius = 40; // alias for circle.r
 circle.cx = 200;
 circle.cy = 150;
 ```

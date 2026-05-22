@@ -13,6 +13,7 @@ Every shard wraps one DOM node (`htmlNode`). Base provides:
 **Transforms:** `translate`, `rotate`, `scale` — prepends to existing `transform` attribute
 
 **Visual state (for highlighter):**
+
 - `captureVisualState()` → `{ fill, stroke, strokeWidth, opacity }`
 - `applyVisualState(state)`
 - `applyHighlight(options)` → returns previous state
@@ -26,15 +27,15 @@ Location: `src/core/SvgContainer.ts`
 
 Wraps root `SVGSVGElement` + parsed `SvgElementMap`.
 
-| Method / Property | Description |
-| ----------------- | ----------- |
-| `htmlNode` | Root SVG element |
-| `elements` | Typed map by element kind |
-| `width`, `height`, `viewBox` | Container dimensions |
-| `getByType(type)` | Typed array access |
-| `getById(id)` | Find shard by element id |
-| `getAll()` | Flat list with `{ type, element, label }` |
-| `refresh()` | Re-parse after DOM mutations |
+| Method / Property            | Description                               |
+| ---------------------------- | ----------------------------------------- |
+| `htmlNode`                   | Root SVG element                          |
+| `elements`                   | Typed map by element kind                 |
+| `width`, `height`, `viewBox` | Container dimensions                      |
+| `getByType(type)`            | Typed array access                        |
+| `getById(id)`                | Find shard by element id                  |
+| `getAll()`                   | Flat list with `{ type, element, label }` |
+| `refresh()`                  | Re-parse after DOM mutations              |
 
 ## Types
 
