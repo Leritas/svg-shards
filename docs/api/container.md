@@ -1,6 +1,19 @@
 # SvgContainer API
 
-Returned by `createSvgShards.fromElement()`.
+Returned by `createSvgShards.fromElement(element, options?)`.
+
+## Options
+
+```typescript
+interface CreateSvgShardsOptions {
+    observe?: boolean; // enable MutationObserver auto-refresh
+    observeDebounceMs?: number; // debounce ms (default: 16)
+}
+```
+
+```typescript
+const svg = createSvgShards.fromElement(el, { observe: true });
+```
 
 ## Properties
 
@@ -8,6 +21,7 @@ Returned by `createSvgShards.fromElement()`.
 | ---------- | ----------------- | -------------------------- |
 | `htmlNode` | `SVGSVGElement`   | Root SVG element           |
 | `elements` | `SvgElementMap`   | Shards grouped by type     |
+| `registry` | `NodeRegistry`    | WeakMap cache node → shard |
 | `width`    | `number`          | Rendered or viewBox width  |
 | `height`   | `number`          | Rendered or viewBox height |
 | `viewBox`  | `DOMRectReadOnly` | SVG viewBox                |
@@ -25,10 +39,19 @@ const groups = svg.getByType('group');
 
 ### `getById(id)`
 
-Find a shard by element `id`:
+Find a shard by element `id`. Uses `getElementById` and lazy-wraps nodes not yet in the cache:
 
 ```typescript
 const sun = svg.getById('sun');
+```
+
+### `query(selector)` / `queryOne(selector)`
+
+Find shards by CSS selector (lazy-wraps matching nodes):
+
+```typescript
+const steps = svg.query('[data-step]');
+const first = svg.queryOne('.highlight');
 ```
 
 ### `getAll()`
@@ -45,10 +68,20 @@ interface SvgElementEntry {
 
 ### `refresh()`
 
-Re-parse the SVG after DOM mutations:
+Re-parse the SVG after DOM mutations. Existing shard wrappers are **reused** for unchanged nodes (stable object identity):
 
 ```typescript
 svg.refresh();
+```
+
+### `enableAutoRefresh(options?)` / `disableAutoRefresh()`
+
+Opt-in MutationObserver that debounces and calls `refresh()`:
+
+```typescript
+svg.enableAutoRefresh({ debounceMs: 32 });
+// later
+svg.disableAutoRefresh();
 ```
 
 ## SvgElementMap keys
@@ -82,3 +115,7 @@ shard.clearHighlight(prev);
 ```
 
 See [Element classes](./elements.md) for per-type properties.
+
+## Reactive bindings
+
+See [Reactive API](./reactive.md) for `svg-shards/reactive` — signal-driven attribute updates.

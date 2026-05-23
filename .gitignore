@@ -1,5 +1,6 @@
 node_modules/
 dist/
+site/
 plugins/svg-highlighter/demo/vendor/
 
 .examples

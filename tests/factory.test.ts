@@ -1,4 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
+import { NodeRegistry } from '../src/core/NodeRegistry';
 import { ElementFactory } from '../src/factories/ElementFactory';
 import { parseSvg } from './helpers';
 
@@ -25,7 +26,7 @@ describe('ElementFactory', () => {
 
     it('parses all supported element types', () => {
         svg = parseSvg(FIXTURE);
-        const map = ElementFactory.parseSvgElement(svg);
+        const map = ElementFactory.parseSvgElement(svg, new NodeRegistry());
 
         expect(map.rect).toHaveLength(1);
         expect(map.circle).toHaveLength(2);
@@ -41,17 +42,25 @@ describe('ElementFactory', () => {
 
     it('indexes groups under group key (not g)', () => {
         svg = parseSvg(FIXTURE);
-        const map = ElementFactory.parseSvgElement(svg);
+        const map = ElementFactory.parseSvgElement(svg, new NodeRegistry());
 
         expect(map.group[0].id).toBe('group1');
     });
 
     it('wraps nodes in typed classes', () => {
         svg = parseSvg(FIXTURE);
-        const map = ElementFactory.parseSvgElement(svg);
+        const map = ElementFactory.parseSvgElement(svg, new NodeRegistry());
 
         expect(map.rect[0].width).toBe(40);
         expect(map.circle[0].r).toBe(15);
         expect(map.circle[0].radius).toBe(15);
+    });
+
+    it('populates GroupElement.children on parse', () => {
+        svg = parseSvg(FIXTURE);
+        const map = ElementFactory.parseSvgElement(svg, new NodeRegistry());
+
+        expect(map.group[0].children).toHaveLength(1);
+        expect(map.group[0].children[0]).toBe(map.circle[1]);
     });
 });

@@ -1,0 +1,23 @@
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <rect id="background" x="0" y="0" width="400" height="300" fill="#0f1419" stroke="none" />
+  <rect
+    id="panel"
+    x="40"
+    y="40"
+    width="120"
+    height="80"
+    rx="8"
+    fill="#4a90d9"
+    stroke="#2c5282"
+    stroke-width="2"
+    data-role="accent"
+  />
+  <circle id="sun" cx="320" cy="60" r="30" fill="#f6ad55" stroke="#dd6b20" stroke-width="2" data-role="accent" />
+  <ellipse id="orbit" cx="200" cy="150" rx="55" ry="28" fill="none" stroke="#4a5568" stroke-width="1.5" stroke-dasharray="4 3" />
+  <g id="scene-group">
+    <circle id="moon" cx="160" cy="140" r="12" fill="#e2e8f0" stroke="#718096" stroke-width="1.5" />
+    <path id="trail" d="M 180 160 Q 220 120 260 150" fill="none" stroke="#68d391" stroke-width="3" stroke-linecap="round" />
+    <rect id="badge" x="230" y="170" width="36" height="20" rx="4" fill="#805ad5" stroke="#553c9a" stroke-width="1.5" />
+  </g>
+  <text id="label" x="40" y="260" fill="#a0aec0" font-size="14" font-family="system-ui, sans-serif">svg-shards playground</text>
+</svg>

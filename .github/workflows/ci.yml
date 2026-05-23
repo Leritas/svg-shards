@@ -26,6 +26,8 @@ jobs:
 
       - run: npm run build:all
 
+      - run: npm run playground:build
+
       - run: npm test
 
       - run: npm run lint

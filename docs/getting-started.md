@@ -51,13 +51,33 @@ circle.cy = 150;
 
 ## After DOM changes
 
-If you add or remove elements programmatically, call `refresh()`:
+If you add or remove elements programmatically, call `refresh()` or enable auto-sync:
 
 ```typescript
+// Manual
 const newRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
 svg.htmlNode.appendChild(newRect);
 svg.refresh();
+
+// Auto (MutationObserver)
+const svg = createSvgShards.fromElement(el, { observe: true });
 ```
+
+Shard wrappers for existing DOM nodes keep the same object identity across `refresh()`.
+
+## Reactive updates
+
+For high-frequency updates (animations, particles), use the reactive subpath:
+
+```typescript
+import { signal, bindProperty } from 'svg-shards/reactive';
+
+const cx = signal(50);
+bindProperty(circle, 'cx', cx);
+cx.value = 120; // updates only cx in the DOM
+```
+
+See [Reactive API](./api/reactive.md).
 
 ## Direct DOM access
 

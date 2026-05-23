@@ -1,3 +1,4 @@
+import { NodeRegistry } from '../core/NodeRegistry';
 import { SvgElementMap, SvgElementType, TAG_TO_MAP_KEY } from '../core/types';
 import {
     RectElement,
@@ -74,12 +75,12 @@ export class ElementFactory {
         }
     }
 
-    static parseSvgElement(svgNode: SVGSVGElement): SvgElementMap {
+    static parseSvgElement(svgNode: SVGSVGElement, registry: NodeRegistry): SvgElementMap {
         const elements = createEmptyMap();
         const descendants = svgNode.querySelectorAll('*');
 
         descendants.forEach((node) => {
-            const element = this.createElementFromNode(node);
+            const element = registry.getOrCreate(node);
             if (!element) {
                 return;
             }
@@ -90,6 +91,23 @@ export class ElementFactory {
             }
         });
 
+        this.populateGroupChildren(elements, registry);
+
         return elements;
+    }
+
+    private static populateGroupChildren(elements: SvgElementMap, registry: NodeRegistry): void {
+        for (const group of elements.group) {
+            const children: ParsedSvgElement[] = [];
+
+            for (const childNode of Array.from(group.htmlNode.children)) {
+                const child = registry.get(childNode);
+                if (child) {
+                    children.push(child);
+                }
+            }
+
+            group.syncChildrenFromParse(children);
+        }
     }
 }

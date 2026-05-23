@@ -1,6 +1,6 @@
 {
   "name": "@svg-shards/highlighter",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "SVG element highlighter plugin for svg-shards",
   "author": "Leritas <i@leritas.ru>",
   "license": "MIT",

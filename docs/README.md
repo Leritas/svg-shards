@@ -2,10 +2,13 @@
 
 TypeScript library for working with SVG as independent, typed shards.
 
+**[Interactive Playground](https://leritas.github.io/svg-shards/)** — live tutorial for the core API (recommended starting point).
+
 ## Contents
 
 - [Getting Started](./getting-started.md) — install and first steps
 - [API: SvgContainer](./api/container.md) — container methods and properties
+- [API: Reactive bindings](./api/reactive.md) — signal-driven updates (`svg-shards/reactive`)
 - [API: Element Classes](./api/elements.md) — per-shape APIs
 - [Plugin: SVG Highlighter](./plugins/svg-highlighter.md) — highlight and viewport tool
 - [Examples](./examples/basic-manipulation.md) — common manipulation patterns

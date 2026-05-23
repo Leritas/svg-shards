@@ -12,6 +12,11 @@ export class GroupElement extends SvgElement {
         return this._children;
     }
 
+    /** @internal Populated during parse — do not call directly */
+    syncChildrenFromParse(children: SvgElementUnion[]): void {
+        this._children = children;
+    }
+
     addChild(element: SvgElementUnion): void {
         this._children.push(element);
         this.htmlNode.appendChild(element.htmlNode);

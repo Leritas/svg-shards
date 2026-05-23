@@ -60,10 +60,10 @@ See [roadmap.md](./roadmap.md) for full backlog.
 ## Key design decisions (v1)
 
 1. **Element identification**: Flat map by type + index; `getAll()` provides labels (`id` or `"circle #2"`)
-2. **Change detection**: Manual `refresh()` after DOM changes; no MutationObserver yet
+2. **Change detection**: Opt-in `MutationObserver` auto-refresh; manual `refresh()` still available; WeakMap preserves shard identity
 3. **Mutable API**: Transformations and style changes modify in place
-4. **Framework**: Framework-agnostic; adapters in roadmap
-5. **Group key**: `elements.group` (mapped from DOM tag `g`)
+4. **Framework**: Framework-agnostic core; reactive subpath via `@preact/signals-core`; browser ESM bundle for vanilla
+5. **Group key**: `elements.group` (mapped from DOM tag `g`); `GroupElement.children` populated on parse
 
 ## Plugin
 
