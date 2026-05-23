@@ -115,6 +115,7 @@ jobs:
         if: needs.resolve.outputs.package == 'highlighter'
         run: |
           npm run build
+          npm ci --prefix plugins/svg-highlighter
           npm run build --prefix plugins/svg-highlighter
 
       - name: Publish svg-shards to npm

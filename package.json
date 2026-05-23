@@ -34,7 +34,7 @@
   "homepage": "https://leritas.github.io/svg-shards/",
   "scripts": {
     "build": "tsc && node scripts/build-browser.mjs",
-    "build:all": "npm run build && npm run build --prefix plugins/svg-highlighter",
+    "build:all": "npm run build && npm ci --prefix plugins/svg-highlighter && npm run build --prefix plugins/svg-highlighter",
     "dev": "tsc --watch",
     "lint": "eslint src tests vitest.config.ts plugins/svg-highlighter/src",
     "lint:fix": "eslint src tests vitest.config.ts plugins/svg-highlighter/src --fix",
