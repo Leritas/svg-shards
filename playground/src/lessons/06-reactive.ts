@@ -166,7 +166,10 @@ scheduleBatch(() => {
                 orbitCy.value = Number(cyRange.value);
                 syncOrbitCenterToShard();
                 sun.htmlNode.style.willChange = 'transform, opacity';
-                ctx.log('scheduleBatch + rAF', `transform orbit @ ${Math.round(orbitCx.value)}, ${Math.round(orbitCy.value)}`);
+                ctx.log(
+                    'scheduleBatch + rAF',
+                    `transform orbit @ ${Math.round(orbitCx.value)}, ${Math.round(orbitCy.value)}`,
+                );
                 rafId = requestAnimationFrame(animate);
             }),
         );

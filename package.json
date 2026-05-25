@@ -40,6 +40,8 @@
     "lint:fix": "eslint src tests playground vitest.config.ts plugins/svg-highlighter/src --fix",
     "format": "prettier --write \"**/*.{ts,js,json,md,html,css}\"",
     "format:check": "prettier --check \"**/*.{ts,js,json,md,html,css}\"",
+    "verify": "npm run typecheck && npm run lint && npm run format:check && npm test",
+    "prepare": "husky",
     "prepublishOnly": "npm run build && npm test && npm run lint && npm run format:check",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -66,7 +68,9 @@
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^16.5.0",
+    "husky": "^9.1.7",
     "jsdom": "^24.0.0",
+    "lint-staged": "^16.4.0",
     "prettier": "^3.2.4",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.4",
@@ -74,5 +78,14 @@
   },
   "peerDependencies": {
     "@preact/signals-core": "^1.14.2"
+  },
+  "lint-staged": {
+    "*.{ts,js,mjs,cjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,html,css}": [
+      "prettier --write"
+    ]
   }
 }

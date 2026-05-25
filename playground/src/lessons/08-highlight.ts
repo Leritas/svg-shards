@@ -61,7 +61,11 @@ else { prev = applyHighlight({ ... }); }`,
         const row = el('div', { className: 'btn-row' });
         row.appendChild(
             btn('applyHighlight (orange)', () => {
-                togglePanel('orange', { fill: '#ff6600', stroke: '#ff6600', strokeWidthBoost: 3 }, 'applyHighlight orange');
+                togglePanel(
+                    'orange',
+                    { fill: '#ff6600', stroke: '#ff6600', strokeWidthBoost: 3 },
+                    'applyHighlight orange',
+                );
             }),
         );
         row.appendChild(
