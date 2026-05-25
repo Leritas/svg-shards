@@ -8,8 +8,8 @@ Two independent npm packages live in one repository. **Each publish run releases
 
 | Package            | npm name                                                                           | Version file                                                                         |
 | ------------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Core               | [`svg-shards`](https://www.npmjs.com/package/svg-shards)                           | [`package.json`](../../package.json)                                                 |
-| Highlighter plugin | [`@svg-shards/highlighter`](https://www.npmjs.com/package/@svg-shards/highlighter) | [`plugins/svg-highlighter/package.json`](../../plugins/svg-highlighter/package.json) |
+| Core               | `[svg-shards](https://www.npmjs.com/package/svg-shards)`                           | `[package.json](../../package.json)`                                                 |
+| Highlighter plugin | `[@svg-shards/highlighter](https://www.npmjs.com/package/@svg-shards/highlighter)` | `[plugins/svg-highlighter/package.json](../../plugins/svg-highlighter/package.json)` |
 
 - **CI** (`.github/workflows/ci.yml`) runs on every push/PR to `main`: build, test, lint, format check.
 - **Publish** (`.github/workflows/publish.yml`) runs only on a version git tag or manual workflow dispatch.
@@ -32,7 +32,7 @@ For **each** package (`svg-shards` and `@svg-shards/highlighter`):
 | Workflow filename    | `publish.yml`   |
 | Environment          | _(leave empty)_ |
 
-4. Save.
+1. Save.
 
 Both packages trust the same workflow file. npm validates OIDC based on which `package.json` is published in a given run.
 
@@ -65,7 +65,7 @@ tar -tzf svg-shards-*.tgz   # should contain dist/, README.md, LICENSE — no sr
 
 | Step | Action                                                                                          |
 | ---- | ----------------------------------------------------------------------------------------------- |
-| 1    | Bump `"version"` in root [`package.json`](../../package.json)                                   |
+| 1    | Bump `"version"` in root `[package.json](../../package.json)`                                   |
 | 2    | Commit and push to `main`                                                                       |
 | 3    | Create tag: `git tag vX.Y.Z` — version in tag **includes** `v`, in package.json **without** `v` |
 | 4    | Push tag: `git push origin vX.Y.Z`                                                              |
@@ -88,7 +88,7 @@ git push origin v1.0.1
 | Step | Action                                                                                                   |
 | ---- | -------------------------------------------------------------------------------------------------------- |
 | 1    | Ensure the required `svg-shards` version is **already published** on npm                                 |
-| 2    | Bump `"version"` in [`plugins/svg-highlighter/package.json`](../../plugins/svg-highlighter/package.json) |
+| 2    | Bump `"version"` in `[plugins/svg-highlighter/package.json](../../plugins/svg-highlighter/package.json)` |
 | 3    | If core had a **major** release, update `peerDependencies.svg-shards` range                              |
 | 4    | Commit and push to `main`                                                                                |
 | 5    | `git tag highlighter-vX.Y.Z` → `git push origin highlighter-vX.Y.Z`                                      |
@@ -147,6 +147,6 @@ One tag → one package. There is no single tag that publishes both.
 
 ## Related files
 
-- [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)
-- [`.github/workflows/publish.yml`](../../.github/workflows/publish.yml)
+- `[.github/workflows/ci.yml](../../.github/workflows/ci.yml)`
+- `[.github/workflows/publish.yml](../../.github/workflows/publish.yml)`
 - Reference implementation: [eslint-plugin-angular-class-ordering](https://github.com/Leritas/eslint-plugin-angular-class-ordering)

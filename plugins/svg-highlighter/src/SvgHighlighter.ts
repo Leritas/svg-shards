@@ -1,6 +1,6 @@
 import type { SvgElementUnion } from 'svg-shards';
 import { createSvgShards } from 'svg-shards';
-import { bindVisual, computed, readSignalValue, signal, type Signal, type SignalLike } from 'svg-shards/reactive';
+import { bindVisual, computed, signal, type Signal, type SignalLike } from 'svg-shards/reactive';
 import { ViewportController } from './ViewportController';
 import type {
     HighlightMode,
@@ -29,6 +29,10 @@ interface ActiveBinding {
 
 function isSignalLike<T>(value: unknown): value is SignalLike<T> {
     return typeof value === 'object' && value !== null && 'value' in value;
+}
+
+function readSignalValue<T>(source: SignalLike<T>): T {
+    return source.value;
 }
 
 function isHighlighterContainer(source: unknown): source is HighlighterContainer {
