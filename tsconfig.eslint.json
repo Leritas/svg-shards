@@ -4,6 +4,12 @@
     "rootDir": ".",
     "noEmit": true
   },
-  "include": ["src/**/*", "tests/**/*", "vitest.config.ts", "plugins/svg-highlighter/src/**/*"],
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "playground/**/*",
+    "vitest.config.ts",
+    "plugins/svg-highlighter/src/**/*"
+  ],
   "exclude": ["node_modules", "dist", "plugins/svg-highlighter/dist"]
 }

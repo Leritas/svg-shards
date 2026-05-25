@@ -9,6 +9,7 @@ TypeScript library for working with SVG as independent, typed shards.
 - [Getting Started](./getting-started.md) — install and first steps
 - [API: SvgContainer](./api/container.md) — container methods and properties
 - [API: Reactive bindings](./api/reactive.md) — signal-driven updates (`svg-shards/reactive`)
+- [API: Transforms & sizing](./api/transforms.md) — `resize` vs `scale` vs `scaleAt`
 - [API: Element Classes](./api/elements.md) — per-shape APIs
 - [Plugin: SVG Highlighter](./plugins/svg-highlighter.md) — highlight and viewport tool
 - [Examples](./examples/basic-manipulation.md) — common manipulation patterns

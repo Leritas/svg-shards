@@ -64,6 +64,14 @@ export class Transformation {
         return this.multiply(new Transformation(sx, 0, 0, syValue, 0, 0));
     }
 
+    scaleAt(sx: number, sy: number, cx: number, cy: number): Transformation {
+        const toOrigin = new Transformation(1, 0, 0, 1, -cx, -cy);
+        const fromOrigin = new Transformation(1, 0, 0, 1, cx, cy);
+        const scaleMatrix = new Transformation(sx, 0, 0, sy, 0, 0);
+
+        return this.multiply(fromOrigin.multiply(scaleMatrix.multiply(toOrigin)));
+    }
+
     multiply(other: Transformation): Transformation {
         return new Transformation(
             this._a * other._a + this._c * other._b,

@@ -3,42 +3,89 @@ import { Transformation } from '../../../src/core/Transformation';
 import { bindTransform } from '../../../src/reactive/bindTransform';
 import type { Lesson } from '../types';
 import { btn, el } from '../types';
-import type { CircleElement } from '../../../src/elements/shapes/CircleElement';
+import type { RectElement } from '../../../src/elements/shapes/RectElement';
+
+function rectCenter(rect: RectElement): { x: number; y: number } {
+    return {
+        x: rect.x + rect.width / 2,
+        y: rect.y + rect.height / 2,
+    };
+}
+
+function mountSizingTable(parent: HTMLElement): void {
+    const table = el('table', { className: 'sizing-table' });
+    const thead = el('thead');
+    const headRow = el('tr');
+    for (const label of ['Approach', 'API', 'Drift?']) {
+        headRow.appendChild(el('th', { textContent: label }));
+    }
+    thead.appendChild(headRow);
+    table.appendChild(thead);
+
+    const tbody = el('tbody');
+    const rows: Array<[string, string, string]> = [
+        ['Resize attrs', 'panel.width = 144', 'No — top-left fixed'],
+        ['scale transform', 'panel.scale(1.2)', 'Yes — from (0,0)'],
+        ['scaleAt pivot', 'panel.scaleAt(1.2, 1.2, cx, cy)', 'No — grows in place'],
+        ['Matrix + bind', 'Transformation.scaleAt(...) + bindTransform', 'Composable pivot'],
+    ];
+    for (const [approach, api, drift] of rows) {
+        const row = el('tr');
+        row.appendChild(el('td', { textContent: approach }));
+        row.appendChild(el('td', { textContent: api }));
+        row.appendChild(el('td', { textContent: drift }));
+        tbody.appendChild(row);
+    }
+    table.appendChild(tbody);
+    parent.appendChild(table);
+}
 
 export const transformsLesson: Lesson = {
     id: 'transforms',
     title: 'Transforms — imperative & matrix',
     description:
-        'Imperative translate/rotate/scale prepend transform strings. For composable transforms, use the Transformation class with bindTransform for signal-driven matrix updates.',
-    apiRefs: ['SvgElement.translate', 'SvgElement.rotate', 'Transformation', 'bindTransform'],
-    snippet: `moon.translate(10, 0);
-moon.rotate(15);
+        'Three ways to change size: resize attributes (top-left anchor), scale() transform (SVG origin), scaleAt() transform (your pivot). Transform helpers prepend and stack on each click.',
+    apiRefs: [
+        'RectElement.resize',
+        'SvgElement.scale',
+        'SvgElement.scaleAt',
+        'Transformation.scaleAt',
+        'bindTransform',
+    ],
+    snippet: `panel.scale(1.2);                    // drift from (0,0)
+panel.scaleAt(1.2, 1.2, cx, cy);      // in place
 
-const matrix = signal(Transformation.identity().rotate(45, 160, 140));
-bindTransform(moon, matrix);`,
-    mount(panel, ctx) {
+const matrix = signal(
+  Transformation.identity().scaleAt(1.2, 1.2, cx, cy)
+);
+bindTransform(panel, matrix);`,
+    mount(panelEl, ctx) {
         const svg = ctx.getContainer();
-        const moon = svg.getById('moon') as CircleElement | null;
-        if (!moon) {
-            panel.appendChild(el('p', { textContent: 'Moon shard not found' }));
+        const panel = svg.getById('panel') as RectElement | null;
+        if (!panel) {
+            panelEl.appendChild(el('p', { textContent: 'Panel shard not found' }));
             return () => {};
         }
 
-        ctx.highlightShard(moon);
+        ctx.highlightShard(panel);
+        mountSizingTable(panelEl);
 
         let unbind: (() => void) | null = null;
         const matrixSignal = signal(Transformation.identity());
         let matrixMode = false;
 
+        const pivot = () => rectCenter(panel);
+
         const applyMatrix = (): void => {
+            const { x: cx, y: cy } = pivot();
             if (!matrixMode) {
                 matrixMode = true;
-                moon.transform = null;
-                unbind = bindTransform(moon, matrixSignal);
-                ctx.log('bindTransform(moon, matrixSignal)', 'matrix mode ON');
+                panel.transform = null;
+                unbind = bindTransform(panel, matrixSignal);
+                ctx.log('bindTransform(panel, matrixSignal)', 'matrix mode ON');
             }
             matrixSignal.value = Transformation.identity()
-                .rotate(Number(rotateInput.value), moon.cx, moon.cy)
+                .rotate(Number(rotateInput.value), cx, cy)
                 .translate(Number(txInput.value), Number(tyInput.value));
         };
 
@@ -56,8 +103,8 @@ bindTransform(moon, matrix);`,
                 unbind?.();
                 unbind = null;
                 matrixMode = false;
-                moon.translate(15, 0);
-                ctx.log('moon.translate(15, 0)', moon.transform ?? '');
+                panel.translate(15, 0);
+                ctx.log('panel.translate(15, 0)', panel.transform ?? '');
             }),
         );
         row.appendChild(
@@ -65,8 +112,9 @@ bindTransform(moon, matrix);`,
                 unbind?.();
                 unbind = null;
                 matrixMode = false;
-                moon.rotate(20);
-                ctx.log('moon.rotate(20)', moon.transform ?? '');
+                const { x: cx, y: cy } = pivot();
+                panel.rotate(20, cx, cy);
+                ctx.log(`panel.rotate(20, ${cx}, ${cy})`, panel.transform ?? '');
             }),
         );
         row.appendChild(
@@ -74,8 +122,19 @@ bindTransform(moon, matrix);`,
                 unbind?.();
                 unbind = null;
                 matrixMode = false;
-                moon.scale(1.2);
-                ctx.log('moon.scale(1.2)', moon.transform ?? '');
+                panel.scale(1.2);
+                ctx.log('panel.scale(1.2)', panel.transform ?? '');
+                ctx.log('note', 'from (0,0) — drift down-right');
+            }),
+        );
+        row.appendChild(
+            btn('scaleAt(1.2)', () => {
+                unbind?.();
+                unbind = null;
+                matrixMode = false;
+                const { x: cx, y: cy } = pivot();
+                panel.scaleAt(1.2, 1.2, cx, cy);
+                ctx.log(`panel.scaleAt(1.2, 1.2, ${cx}, ${cy})`, panel.transform ?? '');
             }),
         );
         row.appendChild(
@@ -83,23 +142,23 @@ bindTransform(moon, matrix);`,
                 unbind?.();
                 unbind = null;
                 matrixMode = false;
-                moon.transform = null;
+                panel.transform = null;
                 rotateInput.value = '0';
                 txInput.value = '0';
                 tyInput.value = '0';
-                ctx.log('moon.transform = null');
+                ctx.log('panel.transform = null');
             }),
         );
-        panel.appendChild(row);
+        panelEl.appendChild(row);
 
-        panel.appendChild(el('p', { className: 'control-hint', textContent: 'Matrix mode (bindTransform):' }));
-        panel.appendChild(
+        panelEl.appendChild(el('p', { className: 'control-hint', textContent: 'Matrix mode (bindTransform):' }));
+        panelEl.appendChild(
             el('div', { className: 'control-group' }, [el('label', { textContent: 'rotate°' }), rotateInput]),
         );
-        panel.appendChild(
+        panelEl.appendChild(
             el('div', { className: 'control-group' }, [el('label', { textContent: 'translate X' }), txInput]),
         );
-        panel.appendChild(
+        panelEl.appendChild(
             el('div', { className: 'control-group' }, [el('label', { textContent: 'translate Y' }), tyInput]),
         );
 

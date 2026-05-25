@@ -121,6 +121,27 @@ describe('SvgContainer', () => {
         vi.useRealTimers();
     });
 
+    it('onAfterRefresh runs after manual and observer refresh', async () => {
+        vi.useFakeTimers();
+        svg = parseSvg(FIXTURE);
+        const container = createSvgShards.fromElement(svg)!;
+        const calls: string[] = [];
+        container.onAfterRefresh(() => {
+            calls.push('refresh');
+        });
+
+        container.refresh();
+        expect(calls).toEqual(['refresh']);
+
+        container.enableAutoRefresh({ debounceMs: 16 });
+        svg.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'rect'));
+        await vi.advanceTimersByTimeAsync(16);
+
+        expect(calls).toEqual(['refresh', 'refresh']);
+        container.disableAutoRefresh();
+        vi.useRealTimers();
+    });
+
     it('fromElement with observe option enables auto refresh', async () => {
         vi.useFakeTimers();
         svg = parseSvg(FIXTURE);

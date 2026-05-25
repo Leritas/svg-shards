@@ -11,7 +11,11 @@ export class CircleElement extends SvgElement {
     }
 
     set cx(value: number) {
-        this.htmlNode.setAttribute('cx', value.toString());
+        const str = value.toString();
+        if (this.htmlNode.getAttribute('cx') === str) {
+            return;
+        }
+        this.htmlNode.setAttribute('cx', str);
     }
 
     get cy(): number {
@@ -20,7 +24,11 @@ export class CircleElement extends SvgElement {
     }
 
     set cy(value: number) {
-        this.htmlNode.setAttribute('cy', value.toString());
+        const str = value.toString();
+        if (this.htmlNode.getAttribute('cy') === str) {
+            return;
+        }
+        this.htmlNode.setAttribute('cy', str);
     }
 
     get r(): number {

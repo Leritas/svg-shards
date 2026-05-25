@@ -82,6 +82,21 @@ function initRouter(): void {
     navigate();
 }
 
+function remountActiveLessonControls(): void {
+    if (!activeLesson) {
+        return;
+    }
+
+    if (activeCleanup) {
+        activeCleanup();
+        activeCleanup = null;
+    }
+
+    controlsEl.replaceChildren();
+    const ctx = createLessonContext(setSnippet);
+    activeCleanup = activeLesson.mount(controlsEl, ctx);
+}
+
 function init(): void {
     initLogPanel(document.getElementById('log-output')!);
     initAppState(canvasHost);
@@ -90,10 +105,7 @@ function init(): void {
     document.getElementById('btn-reset-scene')!.addEventListener('click', () => {
         if (activeLesson) {
             activeLesson.reset(createLessonContext(setSnippet));
-            if (activeCleanup) {
-                activeCleanup();
-            }
-            activeCleanup = activeLesson.mount(controlsEl, createLessonContext(setSnippet));
+            remountActiveLessonControls();
         } else {
             resetScene();
         }

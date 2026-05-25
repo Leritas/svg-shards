@@ -94,7 +94,11 @@ export abstract class SvgElement {
     }
 
     set opacity(value: number) {
-        this._htmlNode.setAttribute('opacity', value.toString());
+        const str = value.toString();
+        if (this._htmlNode.getAttribute('opacity') === str) {
+            return;
+        }
+        this._htmlNode.setAttribute('opacity', str);
     }
 
     get transform(): string | null {
@@ -102,11 +106,17 @@ export abstract class SvgElement {
     }
 
     set transform(value: string | null) {
-        if (value === null) {
+        if (value === null || value === '') {
+            if (!this._htmlNode.hasAttribute('transform')) {
+                return;
+            }
             this._htmlNode.removeAttribute('transform');
-        } else {
-            this._htmlNode.setAttribute('transform', value);
+            return;
         }
+        if (this._htmlNode.getAttribute('transform') === value) {
+            return;
+        }
+        this._htmlNode.setAttribute('transform', value);
     }
 
     get style(): CSSStyleDeclaration {
@@ -141,6 +151,13 @@ export abstract class SvgElement {
         const syValue = sy ?? sx;
         const currentTransform = this.transform || '';
         this.transform = `scale(${sx}, ${syValue}) ${currentTransform}`.trim();
+    }
+
+    /** Scale around pivot (cx, cy) — shape grows in place without origin drift. */
+    scaleAt(sx: number, sy: number, cx: number, cy: number): void {
+        this.translate(-cx, -cy);
+        this.scale(sx, sy);
+        this.translate(cx, cy);
     }
 
     captureVisualState(): VisualState {

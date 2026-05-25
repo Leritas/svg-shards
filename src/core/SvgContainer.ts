@@ -25,6 +25,7 @@ export class SvgContainer {
     private _observer: MutationObserver | null = null;
     private _refreshTimer: ReturnType<typeof setTimeout> | null = null;
     private _observeDebounceMs: number;
+    private _onAfterRefresh: (() => void) | null = null;
 
     constructor(
         htmlNode: SVGSVGElement,
@@ -132,6 +133,12 @@ export class SvgContainer {
 
     refresh(): void {
         this._elements = ElementFactory.parseSvgElement(this._htmlNode, this._registry);
+        this._onAfterRefresh?.();
+    }
+
+    /** Called after every refresh — manual or observer-triggered. */
+    onAfterRefresh(callback: (() => void) | null): void {
+        this._onAfterRefresh = callback;
     }
 
     enableAutoRefresh(options?: AutoRefreshOptions): void {

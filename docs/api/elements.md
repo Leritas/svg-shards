@@ -4,7 +4,9 @@ All element classes extend `SvgElement` and share base properties:
 
 **Style:** `fill`, `stroke`, `strokeWidth`, `opacity`, `transform`
 
-**Transforms:** `translate(dx, dy)`, `rotate(angle, cx?, cy?)`, `scale(sx, sy?)`
+**Transforms:** `translate(dx, dy)`, `rotate(angle, cx?, cy?)`, `scale(sx, sy?)`, `scaleAt(sx, sy, cx, cy)`
+
+See [Transforms & sizing](./transforms.md) for `resize` vs `scale` vs `scaleAt`.
 
 **DOM:** `htmlNode`, `id`, `getBoundingBox()`, `remove()`, classList helpers
 

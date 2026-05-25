@@ -16,6 +16,11 @@ describe('Transformation', () => {
         expect(t.toMatrixString()).toBe('matrix(2 0 0 3 0 0)');
     });
 
+    it('scaleAt composes translate-scale-translate at pivot', () => {
+        const t = Transformation.identity().scaleAt(2, 2, 80, 60);
+        expect(t.toMatrixString()).toBe('matrix(2 0 0 2 -80 -60)');
+    });
+
     it('multiply chains transforms', () => {
         const t = Transformation.identity().translate(5, 0).scale(2);
         expect(t.e).toBe(5);

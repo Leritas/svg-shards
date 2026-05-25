@@ -10,7 +10,7 @@ Every shard wraps one DOM node (`htmlNode`). Base provides:
 
 **Style:** `fill`, `stroke`, `strokeWidth`, `opacity`, `transform`, `style`
 
-**Transforms:** `translate`, `rotate`, `scale` — prepends to existing `transform` attribute
+**Transforms:** `translate`, `rotate`, `scale`, `scaleAt` — prepends to existing `transform` attribute. See [transforms.md](../api/transforms.md).
 
 **Visual state (for highlighter):**
 
