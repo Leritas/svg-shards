@@ -51,12 +51,19 @@ body {
     color: var(--color-text-muted);
 }
 
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
 .lesson-nav {
     list-style: none;
     margin: 0;
     padding: 0.75rem 0;
-    overflow-y: auto;
-    flex: 1;
+    flex-shrink: 0;
 }
 
 .lesson-nav a {
@@ -100,6 +107,50 @@ body {
 
 .sidebar-footer a:hover {
     color: var(--color-accent);
+}
+
+.plugin-section {
+    border-top: 1px solid var(--color-border);
+    margin-top: 0.25rem;
+}
+
+.plugin-section-title,
+.plugin-group-title {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    list-style: none;
+}
+
+.plugin-section-title::-webkit-details-marker,
+.plugin-group-title::-webkit-details-marker {
+    display: none;
+}
+
+.plugin-group {
+    border-top: 1px solid var(--color-border-subtle);
+}
+
+.plugin-group-title {
+    padding-left: 1.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+.plugin-lesson-nav {
+    padding-top: 0;
+    padding-bottom: 0.5rem;
+}
+
+.plugin-lesson-nav a {
+    padding-left: 2rem;
+    font-size: 0.8125rem;
 }
 
 .main {

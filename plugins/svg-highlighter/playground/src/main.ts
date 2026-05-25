@@ -1,14 +1,12 @@
 import { createLessonContext, initAppState, resetScene } from './app-state';
 import { clearLog, initLogPanel, logApi } from './log';
-import { allLessons, defaultLessonId, pluginGroups } from './lessons/plugins';
-import { lessons as coreLessons } from './lessons';
+import { defaultLessonId, highlighterLessons } from './lessons';
 import type { Lesson } from './types';
 
 let activeCleanup: (() => void) | null = null;
 let activeLesson: Lesson | null = null;
 
 const navEl = document.getElementById('lesson-nav')!;
-const pluginNavEl = document.getElementById('plugin-lesson-nav')!;
 const titleEl = document.getElementById('lesson-title')!;
 const descEl = document.getElementById('lesson-description')!;
 const apiRefsEl = document.getElementById('lesson-api-refs')!;
@@ -22,16 +20,12 @@ function setSnippet(code: string): void {
 
 function getLessonFromHash(): Lesson {
     const id = location.hash.replace(/^#/, '') || defaultLessonId;
-    return allLessons.find((lesson) => lesson.id === id) ?? allLessons[0];
-}
-
-function isPluginLesson(id: string): boolean {
-    return pluginGroups.some((group) => group.lessons.some((lesson) => lesson.id === id));
+    return highlighterLessons.find((lesson) => lesson.id === id) ?? highlighterLessons[0];
 }
 
 function updateNav(activeId: string): void {
     navEl.replaceChildren();
-    for (const lesson of coreLessons) {
+    for (const lesson of highlighterLessons) {
         const link = document.createElement('a');
         link.href = `#${lesson.id}`;
         link.textContent = lesson.title.split(' — ')[0] || lesson.title;
@@ -39,24 +33,6 @@ function updateNav(activeId: string): void {
             link.classList.add('active');
         }
         navEl.appendChild(link);
-    }
-
-    pluginNavEl.replaceChildren();
-    for (const group of pluginGroups) {
-        for (const lesson of group.lessons) {
-            const link = document.createElement('a');
-            link.href = `#${lesson.id}`;
-            link.textContent = lesson.title.split(' — ')[0] || lesson.title;
-            if (lesson.id === activeId) {
-                link.classList.add('active');
-            }
-            pluginNavEl.appendChild(link);
-        }
-    }
-
-    if (isPluginLesson(activeId)) {
-        document.querySelector('.plugin-section')?.setAttribute('open', '');
-        document.querySelector('.plugin-group')?.setAttribute('open', '');
     }
 }
 
@@ -137,7 +113,7 @@ function init(): void {
     });
 
     initRouter();
-    logApi('Playground ready', `${allLessons.length} lessons loaded`);
+    logApi('Highlighter playground ready', `${highlighterLessons.length} lessons loaded`);
 }
 
 init();

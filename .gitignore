@@ -1,7 +1,7 @@
 node_modules/
 dist/
 site/
-plugins/svg-highlighter/demo/vendor/
+plugins/svg-highlighter/site/
 
 .examples
 .idea

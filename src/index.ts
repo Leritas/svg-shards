@@ -4,8 +4,8 @@ import { NodeRegistry } from './core/NodeRegistry';
 import { ElementFactory } from './factories';
 
 export class SvgShardsFactory {
-    static fromElement(element: HTMLElement, options?: CreateSvgShardsOptions): SvgContainer | null {
-        const svgNode = element.closest('svg') as SVGSVGElement;
+    static fromElement(element: Element, options?: CreateSvgShardsOptions): SvgContainer | null {
+        const svgNode = element.closest('svg');
         if (!svgNode) {
             return null;
         }

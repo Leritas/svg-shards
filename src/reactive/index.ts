@@ -5,6 +5,7 @@ export { bindProperty, bindVisual } from './bindProperty';
 export { bindTransform } from './bindTransform';
 export { scheduleBatch, flushScheduledBatches } from './scheduleBatch';
 export type { Readable, SignalLike } from './readable';
+export { readSignalValue } from './readable';
 
 export { createSvgShards, SvgShardsFactory } from '../index';
 export { SvgContainer, SvgElement } from '../core';

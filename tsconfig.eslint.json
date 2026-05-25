@@ -2,8 +2,22 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "rootDir": ".",
-    "noEmit": true
+    "noEmit": true,
+    "moduleResolution": "bundler",
+    "paths": {
+      "svg-shards": ["./src/index.ts"],
+      "svg-shards/reactive": ["./src/reactive/index.ts"],
+      "@svg-shards/highlighter": ["./plugins/svg-highlighter/src/index.ts"]
+    }
   },
-  "include": ["src/**/*", "tests/**/*", "playground/**/*", "vitest.config.ts", "plugins/svg-highlighter/src/**/*"],
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "playground/**/*",
+    "vitest.config.ts",
+    "plugins/svg-highlighter/src/**/*",
+    "plugins/svg-highlighter/tests/**/*",
+    "plugins/svg-highlighter/playground/**/*"
+  ],
   "exclude": ["node_modules", "dist", "plugins/svg-highlighter/dist"]
 }

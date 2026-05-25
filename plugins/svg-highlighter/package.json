@@ -1,6 +1,6 @@
 {
   "name": "@svg-shards/highlighter",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "SVG element highlighter plugin for svg-shards",
   "author": "Leritas <i@leritas.ru>",
   "license": "MIT",
@@ -38,12 +38,16 @@
   },
   "scripts": {
     "build": "tsc",
+    "playground:build": "node scripts/build-playground.mjs",
+    "playground:dev": "npm run playground:build && npx serve site --listen 3002",
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
-    "svg-shards": "^1.0.0"
+    "@preact/signals-core": "^1.14.2",
+    "svg-shards": "^0.2.0"
   },
   "devDependencies": {
+    "@preact/signals-core": "^1.14.2",
     "svg-shards": "file:../..",
     "typescript": "^5.3.3"
   }

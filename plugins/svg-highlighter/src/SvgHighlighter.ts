@@ -1,53 +1,109 @@
-import type { HighlightOptions, SvgContainer, SvgElementEntry, SvgElementUnion, VisualState } from 'svg-shards';
+import type { SvgElementUnion } from 'svg-shards';
 import { createSvgShards } from 'svg-shards';
+import { bindVisual, computed, readSignalValue, signal, type Signal, type SignalLike } from 'svg-shards/reactive';
 import { ViewportController } from './ViewportController';
-import type { SvgHighlighterOptions, HighlightMode } from './types';
+import type {
+    HighlightMode,
+    HighlighterContainer,
+    HighlighterEntry,
+    HighlighterShard,
+    HighlighterVisualState,
+    SvgHighlighterOptions,
+} from './types';
 
-export type { SvgHighlighterOptions, HighlightMode, ViewportState } from './types';
+export type {
+    SvgHighlighterOptions,
+    HighlightMode,
+    ViewportState,
+    HighlighterContainer,
+    HighlighterEntry,
+    HighlighterShard,
+    HighlighterVisualState,
+} from './types';
 
-interface HighlightSnapshot {
-    element: SvgElementUnion;
-    state: VisualState;
+interface ActiveBinding {
+    element: HighlighterShard;
+    originalState: HighlighterVisualState;
+    unbind: () => void;
+}
+
+function isSignalLike<T>(value: unknown): value is SignalLike<T> {
+    return typeof value === 'object' && value !== null && 'value' in value;
+}
+
+function isHighlighterContainer(source: unknown): source is HighlighterContainer {
+    return (
+        typeof source === 'object' &&
+        source !== null &&
+        'getAll' in source &&
+        'htmlNode' in source &&
+        'onAfterRefresh' in source
+    );
+}
+
+function asBindableShard(shard: HighlighterShard): SvgElementUnion {
+    return shard as unknown as SvgElementUnion;
+}
+
+function parseStrokeWidth(state: HighlighterVisualState, element: HighlighterShard): number {
+    if (state.strokeWidth !== null && state.strokeWidth !== '') {
+        const parsed = Number.parseFloat(state.strokeWidth);
+        if (!Number.isNaN(parsed)) {
+            return parsed;
+        }
+    }
+    return element.strokeWidth;
 }
 
 export class SvgHighlighter {
-    private container: SvgContainer;
-    private entries: SvgElementEntry[];
-    private options: Required<Pick<SvgHighlighterOptions, 'highlightColor' | 'strokeWidthBoost' | 'highlightMode'>> &
-        SvgHighlighterOptions;
+    private container: HighlighterContainer;
+    private entries: HighlighterEntry[];
+    private readonly strokeWidthBoost: number;
+    private readonly highlightColorSig: SignalLike<string>;
+    private readonly highlightModeSig: SignalLike<HighlightMode>;
     private currentIndex = -1;
-    private highlighted: HighlightSnapshot[] = [];
+    private activeBindings: ActiveBinding[] = [];
     private viewport: ViewportController | null = null;
 
-    private constructor(container: SvgContainer, options: SvgHighlighterOptions) {
+    private constructor(container: HighlighterContainer, options: SvgHighlighterOptions) {
         this.container = container;
         this.entries = container.getAll();
-        this.options = {
-            highlightColor: options.highlightColor ?? '#ff6600',
-            strokeWidthBoost: options.strokeWidthBoost ?? 2,
-            highlightMode: options.highlightMode ?? 'fill',
-            ...options,
-        };
-
+        this.strokeWidthBoost = options.strokeWidthBoost ?? 2;
+        this.highlightColorSig = isSignalLike<string>(options.highlightColor)
+            ? options.highlightColor
+            : signal(options.highlightColor ?? '#ff6600');
+        this.highlightModeSig = isSignalLike<HighlightMode>(options.highlightMode)
+            ? options.highlightMode
+            : signal(options.highlightMode ?? 'fill');
         if (options.container) {
             this.viewport = ViewportController.mount(container.htmlNode, options.container);
         }
+
+        container.onAfterRefresh(() => {
+            this.syncEntries();
+            this.reapplyCurrentHighlight();
+        });
     }
 
-    static create(element: HTMLElement | SVGSVGElement, options: SvgHighlighterOptions = {}): SvgHighlighter | null {
-        const target = element instanceof SVGSVGElement ? element : element;
-        const container = createSvgShards.fromElement(target as HTMLElement);
+    static create(source: Element | HighlighterContainer, options: SvgHighlighterOptions = {}): SvgHighlighter | null {
+        if (isHighlighterContainer(source)) {
+            return new SvgHighlighter(source, options);
+        }
+
+        const container = createSvgShards.fromElement(source, {
+            observe: options.observe,
+        });
         if (!container) {
             return null;
         }
         return new SvgHighlighter(container, options);
     }
 
-    getElementList(): SvgElementEntry[] {
+    getElementList(): HighlighterEntry[] {
         return this.entries;
     }
 
-    highlight(entry: SvgElementEntry): void {
+    highlight(entry: HighlighterEntry): void {
         const index = this.entries.indexOf(entry);
         if (index === this.currentIndex) {
             this.clearHighlight();
@@ -56,7 +112,9 @@ export class SvgHighlighter {
 
         this.clearHighlight();
         this.currentIndex = index;
-        this.applyHighlightTargets(this.getHighlightTargets(entry));
+        if (index >= 0) {
+            this.applyHighlightTargets(this.getHighlightTargets(entry));
+        }
     }
 
     highlightByIndex(index: number): void {
@@ -92,15 +150,12 @@ export class SvgHighlighter {
     }
 
     getHighlightMode(): HighlightMode {
-        return this.options.highlightMode;
+        return readSignalValue(this.highlightModeSig);
     }
 
     setHighlightMode(mode: HighlightMode): void {
-        this.options.highlightMode = mode;
-        if (this.currentIndex >= 0) {
-            const entry = this.entries[this.currentIndex];
-            this.restoreHighlighted();
-            this.applyHighlightTargets(this.getHighlightTargets(entry));
+        if (isSignalLike<HighlightMode>(this.highlightModeSig)) {
+            (this.highlightModeSig as Signal<HighlightMode>).value = mode;
         }
     }
 
@@ -115,51 +170,76 @@ export class SvgHighlighter {
 
     destroy(): void {
         this.clearHighlight();
+        this.container.onAfterRefresh(null);
         this.viewport?.destroy();
         this.viewport = null;
     }
 
-    private getHighlightTargets(entry: SvgElementEntry): SvgElementUnion[] {
+    private syncEntries(): void {
+        const prevEntry = this.currentIndex >= 0 ? this.entries[this.currentIndex] : null;
+        const prevId = prevEntry?.element.id ?? null;
+        this.entries = this.container.getAll();
+
+        if (prevId) {
+            this.currentIndex = this.entries.findIndex((entry) => entry.element.id === prevId);
+        } else if (this.currentIndex >= this.entries.length) {
+            this.currentIndex = -1;
+        }
+    }
+
+    private reapplyCurrentHighlight(): void {
+        if (this.currentIndex < 0) {
+            return;
+        }
+
+        const entry = this.entries[this.currentIndex];
+        if (!entry) {
+            this.clearHighlight();
+            return;
+        }
+
+        this.restoreHighlighted();
+        this.applyHighlightTargets(this.getHighlightTargets(entry));
+    }
+
+    private getHighlightTargets(entry: HighlighterEntry): HighlighterShard[] {
         if (entry.type !== 'group') {
             return [entry.element];
         }
 
         const groupNode = entry.element.htmlNode;
         return this.entries
-            .filter((candidate) => candidate.type !== 'group' && groupNode.contains(candidate.element.htmlNode as Node))
+            .filter((candidate) => candidate.type !== 'group' && groupNode.contains(candidate.element.htmlNode))
             .map((candidate) => candidate.element);
     }
 
-    private applyHighlightTargets(targets: SvgElementUnion[]): void {
-        const options = this.buildHighlightOptions();
-        this.highlighted = targets.map((element) => ({
-            element,
-            state: element.applyHighlight(options),
-        }));
+    private applyHighlightTargets(targets: HighlighterShard[]): void {
+        this.activeBindings = targets.map((element) => {
+            const originalState = element.captureVisualState();
+            const baseStrokeWidth = parseStrokeWidth(originalState, element);
+            const bindable = asBindableShard(element);
+
+            const fill = computed(() => {
+                const mode = readSignalValue(this.highlightModeSig);
+                const color = readSignalValue(this.highlightColorSig);
+                return mode === 'outline' ? 'none' : color;
+            });
+
+            const stroke = computed(() => readSignalValue(this.highlightColorSig));
+
+            const strokeWidth = computed(() => baseStrokeWidth + this.strokeWidthBoost);
+
+            const unbind = bindVisual(bindable, { fill, stroke, strokeWidth });
+
+            return { element, originalState, unbind };
+        });
     }
 
     private restoreHighlighted(): void {
-        for (const { element, state } of this.highlighted) {
-            element.clearHighlight(state);
+        for (const binding of this.activeBindings) {
+            binding.unbind();
+            binding.element.applyVisualState(binding.originalState);
         }
-        this.highlighted = [];
-    }
-
-    private buildHighlightOptions(): HighlightOptions {
-        const color = this.options.highlightColor;
-
-        if (this.options.highlightMode === 'outline') {
-            return {
-                fill: 'none',
-                stroke: color,
-                strokeWidthBoost: this.options.strokeWidthBoost,
-            };
-        }
-
-        return {
-            fill: color,
-            stroke: color,
-            strokeWidthBoost: this.options.strokeWidthBoost,
-        };
+        this.activeBindings = [];
     }
 }

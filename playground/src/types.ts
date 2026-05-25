@@ -1,12 +1,25 @@
+import type { BoundingBox } from '../../src/core/types';
 import type { SvgContainer } from '../../src/core/SvgContainer';
 import type { SvgElement } from '../../src/core/SvgElement';
+
+export interface PluginLessonGroup {
+    id: string;
+    title: string;
+    lessons: Lesson[];
+}
+
+/** Structural target for canvas outline — avoids src/dist class mismatch in plugin lessons. */
+export interface PlaygroundHighlightTarget {
+    getBoundingBox(): BoundingBox;
+    htmlNode: SVGElement;
+}
 
 export interface LessonContext {
     getContainer: () => SvgContainer;
     log: (message: string, detail?: string) => void;
     getCanvasHost: () => HTMLElement;
     resetScene: () => SvgContainer;
-    highlightShard: (shard: SvgElement | null) => void;
+    highlightShard: (shard: PlaygroundHighlightTarget | null) => void;
     setSnippet: (code: string) => void;
 }
 

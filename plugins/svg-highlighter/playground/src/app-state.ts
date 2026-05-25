@@ -1,16 +1,15 @@
-import { createSvgShards } from '../../src/index';
-import type { SvgContainer } from '../../src/core/SvgContainer';
+import { createSvgShards } from 'svg-shards';
+import type { SvgContainer } from 'svg-shards';
 import type { PlaygroundHighlightTarget } from './types';
 import { logApi } from './log';
 import type { LessonContext } from './types';
 
 const HIGHLIGHT_CLASS = 'playground-shard-highlight';
+const SCENE_TEMPLATE_ID = 'scene-svg-template';
 
 let canvasHost: HTMLElement | null = null;
 let container: SvgContainer | null = null;
 let highlightEl: SVGElement | null = null;
-
-const SCENE_TEMPLATE_ID = 'scene-svg-template';
 
 export function initAppState(host: HTMLElement): void {
     canvasHost = host;
