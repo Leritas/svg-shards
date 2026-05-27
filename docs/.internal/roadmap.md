@@ -2,14 +2,15 @@
 
 Pick items to implement incrementally. Not committed — priority TBD.
 
-## Particles (future — после core foundation)
+## Particles (`@svg-shards/particles`)
 
-Цель: тысячи SVG-shard «частиц» с математически меняющимися attrs @ 60fps.
-Строится поверх sync contract + reactive bindings + matrix transforms. **Не в scope текущей реализации.**
+MVP plugin for spawning and simulating circle particle fields. See [particles plugin docs](../plugins/svg-particles.md).
 
-- [ ] **`ShardField` / `ParticlePool`** — object pool для mass-updates shards без GC pressure
+- [x] **`ParticleField`** — spawn circle shards + Euler physics + wall bounce @ 60fps
+- [x] **Signal-driven mass update** — `scheduleBatch` + rAF loop for 1000+ shards/frame
+- [x] **Core create API** — `createCircle` / `createMany` for programmatic primitives
+- [ ] **`ParticlePool`** — object pool reuse without DOM alloc/free
 - [ ] **`spawnFromPath(path, count)`** — генерация N shard-кусочков из path-shard
-- [ ] **Signal-driven mass update** — batch() + rAF scheduler для 1000+ shards/frame
 - [ ] **Path morphing via `d` attr** — bindProperty на PathElement.d для morph-анимаций
 - [ ] **Shard → particle morphing** — explode/implode: SVG shape → flying particles → target shape
 - [ ] **Transform via matrix signals** — bindTransform без string-concat для rotation/scale per particle
@@ -61,7 +62,8 @@ Pick items to implement incrementally. Not committed — priority TBD.
 
 ## Entry points
 
-- [ ] `createSvgShards.generate(config)` — programmatic SVG creation
+- [x] `SvgContainer.create*` / `createMany` — programmatic shape creation
+- [ ] `createSvgShards.generate(config)` — full SVG document from config
 - [ ] `createSvgShards.fromFile(url)` — load SVG from URL/path
 
 ## Animation

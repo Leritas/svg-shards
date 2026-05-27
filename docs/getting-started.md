@@ -49,12 +49,24 @@ circle.cx = 200;
 circle.cy = 150;
 ```
 
-## After DOM changes
+## Creating new shards
 
-If you add or remove elements programmatically, call `refresh()` or enable auto-sync:
+Use the container create API — shards are registered immediately without a full `refresh()`:
 
 ```typescript
-// Manual
+const dot = svg.createCircle({ cx: 100, cy: 100, r: 20, fill: '#0f0' });
+
+const many = svg.createMany('circle', 50, (i) => ({
+    cx: Math.random() * 400,
+    cy: Math.random() * 300,
+    r: 3,
+}));
+```
+
+For low-level DOM edits, you can still append nodes manually and call `refresh()` or enable auto-sync:
+
+```typescript
+// Manual DOM + refresh (legacy)
 const newRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
 svg.htmlNode.appendChild(newRect);
 svg.refresh();

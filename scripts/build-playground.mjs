@@ -10,6 +10,7 @@ const coreDist = join(root, 'dist/browser.mjs');
 const coreIndex = join(root, 'dist/index.js');
 const coreReactive = join(root, 'dist/reactive/index.js');
 const pluginSrc = join(root, 'plugins/svg-highlighter/src/index.ts');
+const particlesSrc = join(root, 'plugins/particles/src/index.ts');
 const entry = join(playgroundDir, 'src/main.ts');
 const outFile = join(siteDir, 'assets/playground.mjs');
 
@@ -43,6 +44,7 @@ await esbuild.build({
         'svg-shards/reactive': coreReactive,
         'svg-shards': coreIndex,
         '@svg-shards/highlighter': pluginSrc,
+        '@svg-shards/particles': particlesSrc,
     },
 });
 

@@ -5,6 +5,7 @@ on:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
       - 'highlighter-v[0-9]+.[0-9]+.[0-9]+'
+      - 'particles-v[0-9]+.[0-9]+.[0-9]+'
   workflow_dispatch:
     inputs:
       package:
@@ -14,6 +15,7 @@ on:
         options:
           - svg-shards
           - highlighter
+          - particles
 
 permissions:
   contents: read
@@ -40,6 +42,8 @@ jobs:
             REF="${{ github.ref_name }}"
             if [[ "$REF" == highlighter-v* ]]; then
               PKG="highlighter"
+            elif [[ "$REF" == particles-v* ]]; then
+              PKG="particles"
             else
               PKG="svg-shards"
             fi
@@ -54,6 +58,10 @@ jobs:
             highlighter)
               WORKDIR="plugins/svg-highlighter"
               PKG_JSON="plugins/svg-highlighter/package.json"
+              ;;
+            particles)
+              WORKDIR="plugins/particles"
+              PKG_JSON="plugins/particles/package.json"
               ;;
             *)
               echo "Unknown package: $PKG"
@@ -98,6 +106,8 @@ jobs:
           REF="${{ github.ref_name }}"
           if [[ "$REF" == highlighter-v* ]]; then
             TAG="${REF#highlighter-v}"
+          elif [[ "$REF" == particles-v* ]]; then
+            TAG="${REF#particles-v}"
           else
             TAG="${REF#v}"
           fi
@@ -118,6 +128,13 @@ jobs:
           npm ci --prefix plugins/svg-highlighter
           npm run build --prefix plugins/svg-highlighter
 
+      - name: Build core and particles
+        if: needs.resolve.outputs.package == 'particles'
+        run: |
+          npm run build
+          npm ci --prefix plugins/particles
+          npm run build --prefix plugins/particles
+
       - name: Publish svg-shards to npm
         if: needs.resolve.outputs.package == 'svg-shards'
         run: npm publish
@@ -125,4 +142,9 @@ jobs:
       - name: Publish @svg-shards/highlighter to npm
         if: needs.resolve.outputs.package == 'highlighter'
         working-directory: plugins/svg-highlighter
+        run: npm publish --access public
+
+      - name: Publish @svg-shards/particles to npm
+        if: needs.resolve.outputs.package == 'particles'
+        working-directory: plugins/particles
         run: npm publish --access public

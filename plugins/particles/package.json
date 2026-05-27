@@ -1,0 +1,54 @@
+{
+  "name": "@svg-shards/particles",
+  "version": "0.1.0",
+  "description": "Particle field plugin for svg-shards — spawn and simulate thousands of SVG shards",
+  "author": "Leritas <i@leritas.ru>",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Leritas/svg-shards.git",
+    "directory": "plugins/particles"
+  },
+  "bugs": {
+    "url": "https://github.com/Leritas/svg-shards/issues"
+  },
+  "homepage": "https://github.com/Leritas/svg-shards#readme",
+  "keywords": [
+    "svg",
+    "shards",
+    "particles",
+    "typescript",
+    "plugin"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "playground:build": "node scripts/build-playground.mjs",
+    "playground:dev": "npm run playground:build && npx serve site --listen 3003",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "@preact/signals-core": "^1.14.2",
+    "svg-shards": "^0.3.0"
+  },
+  "devDependencies": {
+    "@preact/signals-core": "^1.14.2",
+    "svg-shards": "file:../..",
+    "typescript": "^5.3.3"
+  }
+}

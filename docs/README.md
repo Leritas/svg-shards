@@ -12,6 +12,7 @@ TypeScript library for working with SVG as independent, typed shards.
 - [API: Transforms & sizing](./api/transforms.md) — `resize` vs `scale` vs `scaleAt`
 - [API: Element Classes](./api/elements.md) — per-shape APIs
 - [Plugin: SVG Highlighter](./plugins/svg-highlighter.md) — highlight and viewport tool
+- [Plugin: SVG Particles](./plugins/svg-particles.md) — spawn and simulate circle particle fields
 - [Examples](./examples/basic-manipulation.md) — common manipulation patterns
 
 ## Quick example

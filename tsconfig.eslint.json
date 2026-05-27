@@ -7,7 +7,8 @@
     "paths": {
       "svg-shards": ["./src/index.ts"],
       "svg-shards/reactive": ["./src/reactive/index.ts"],
-      "@svg-shards/highlighter": ["./plugins/svg-highlighter/src/index.ts"]
+      "@svg-shards/highlighter": ["./plugins/svg-highlighter/src/index.ts"],
+      "@svg-shards/particles": ["./plugins/particles/src/index.ts"]
     }
   },
   "include": [
@@ -17,7 +18,10 @@
     "vitest.config.ts",
     "plugins/svg-highlighter/src/**/*",
     "plugins/svg-highlighter/tests/**/*",
-    "plugins/svg-highlighter/playground/**/*"
+    "plugins/svg-highlighter/playground/**/*",
+    "plugins/particles/src/**/*",
+    "plugins/particles/tests/**/*",
+    "plugins/particles/playground/**/*"
   ],
-  "exclude": ["node_modules", "dist", "plugins/svg-highlighter/dist"]
+  "exclude": ["node_modules", "dist", "plugins/svg-highlighter/dist", "plugins/particles/dist"]
 }

@@ -1,3 +1,26 @@
+import {
+    buildShapeNode,
+    type CreateCircleOptions,
+    type CreateEllipseOptions,
+    type CreateLineOptions,
+    type CreateOptionsFor,
+    type CreatePathOptions,
+    type CreatePolygonOptions,
+    type CreatePolylineOptions,
+    type CreateRectOptions,
+    type ShapeKind,
+    type ShardTypeFor,
+} from '../create';
+import type { GroupElement } from '../elements/GroupElement';
+import type {
+    CircleElement,
+    EllipseElement,
+    LineElement,
+    PathElement,
+    PolygonElement,
+    PolylineElement,
+    RectElement,
+} from '../elements';
 import { ElementFactory } from '../factories/ElementFactory';
 import { SvgElement } from './SvgElement';
 import { AutoRefreshOptions, CreateSvgShardsOptions } from './options';
@@ -169,6 +192,95 @@ export class SvgContainer {
 
         this._observer?.disconnect();
         this._observer = null;
+    }
+
+    createRect(options: CreateRectOptions = {}): RectElement {
+        return this.createShape('rect', options);
+    }
+
+    createCircle(options: CreateCircleOptions = {}): CircleElement {
+        return this.createShape('circle', options);
+    }
+
+    createEllipse(options: CreateEllipseOptions = {}): EllipseElement {
+        return this.createShape('ellipse', options);
+    }
+
+    createLine(options: CreateLineOptions = {}): LineElement {
+        return this.createShape('line', options);
+    }
+
+    createPolygon(options: CreatePolygonOptions = {}): PolygonElement {
+        return this.createShape('polygon', options);
+    }
+
+    createPolyline(options: CreatePolylineOptions = {}): PolylineElement {
+        return this.createShape('polyline', options);
+    }
+
+    createPath(options: CreatePathOptions = {}): PathElement {
+        return this.createShape('path', options);
+    }
+
+    createMany<K extends ShapeKind>(
+        kind: K,
+        count: number,
+        factory: (index: number) => CreateOptionsFor<K>,
+    ): ShardTypeFor<K>[] {
+        if (count < 0) {
+            throw new RangeError('createMany count must be non-negative');
+        }
+
+        if (count === 0) {
+            return [];
+        }
+
+        const first = factory(0);
+        const parentGroup = first.parent;
+        const parentNode = this.resolveParentNode(parentGroup);
+        const fragment = document.createDocumentFragment();
+        const nodes: SVGElement[] = [];
+
+        for (let i = 0; i < count; i++) {
+            const options = factory(i);
+            const node = buildShapeNode(kind, options);
+            fragment.appendChild(node);
+            nodes.push(node);
+        }
+
+        parentNode.appendChild(fragment);
+
+        const shards: ShardTypeFor<K>[] = [];
+        for (const node of nodes) {
+            const shard = this.registerNode(node) as ShardTypeFor<K>;
+            shards.push(shard);
+            if (parentGroup) {
+                parentGroup.adoptChild(shard);
+            }
+        }
+
+        return shards;
+    }
+
+    registerNode(node: Element): SvgElement | null {
+        return this.wrapAndRegister(node);
+    }
+
+    private createShape<K extends ShapeKind>(kind: K, options: CreateOptionsFor<K>): ShardTypeFor<K> {
+        const node = buildShapeNode(kind, options);
+        const parentNode = this.resolveParentNode(options.parent);
+        parentNode.appendChild(node);
+
+        const shard = this.registerNode(node) as ShardTypeFor<K>;
+        if (options.parent) {
+            options.parent.adoptChild(shard);
+        }
+
+        return shard;
+    }
+
+    private resolveParentNode(parent?: GroupElement): SVGElement | SVGSVGElement {
+        return parent?.htmlNode ?? this._htmlNode;
     }
 
     private scheduleRefresh(): void {

@@ -1,0 +1,13 @@
+.particles-readout {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+}
+
+.fps-counter {
+    display: inline-block;
+    margin-left: 0.5rem;
+    font-family: var(--font-mono);
+    color: var(--accent);
+}

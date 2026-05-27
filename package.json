@@ -1,6 +1,6 @@
 {
   "name": "svg-shards",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "TypeScript OOP library for working with SVG as independent shards",
   "author": "Leritas <i@leritas.ru>",
   "type": "module",
@@ -34,10 +34,10 @@
   "homepage": "https://leritas.github.io/svg-shards/",
   "scripts": {
     "build": "tsc && node scripts/build-browser.mjs",
-    "build:all": "npm run build && npm ci --prefix plugins/svg-highlighter && npm run build --prefix plugins/svg-highlighter",
+    "build:all": "npm run build && npm ci --prefix plugins/svg-highlighter && npm run build --prefix plugins/svg-highlighter && npm ci --prefix plugins/particles && npm run build --prefix plugins/particles",
     "dev": "tsc --watch",
-    "lint": "eslint src tests playground vitest.config.ts plugins/svg-highlighter/src plugins/svg-highlighter/tests plugins/svg-highlighter/playground",
-    "lint:fix": "eslint src tests playground vitest.config.ts plugins/svg-highlighter/src plugins/svg-highlighter/tests plugins/svg-highlighter/playground --fix",
+    "lint": "eslint src tests playground vitest.config.ts plugins/svg-highlighter/src plugins/svg-highlighter/tests plugins/svg-highlighter/playground plugins/particles/src plugins/particles/tests plugins/particles/playground",
+    "lint:fix": "eslint src tests playground vitest.config.ts plugins/svg-highlighter/src plugins/svg-highlighter/tests plugins/svg-highlighter/playground plugins/particles/src plugins/particles/tests plugins/particles/playground --fix",
     "format": "prettier --write \"**/*.{ts,js,json,md,html,css}\"",
     "format:check": "prettier --check \"**/*.{ts,js,json,md,html,css}\"",
     "verify": "npm run typecheck && npm run lint && npm run format:check && npm test",
@@ -48,8 +48,8 @@
     "test:watch": "vitest",
     "playground:build": "npm run build && node scripts/build-playground.mjs",
     "playground:dev": "npm run playground:build && npx serve site --listen 3001",
-    "demo": "npm run build:all && npm run playground:build --prefix plugins/svg-highlighter && npx serve plugins/svg-highlighter/site --listen 3000",
-    "demo:serve": "npm run playground:build --prefix plugins/svg-highlighter && npx serve plugins/svg-highlighter/site --listen 3000"
+    "demo": "npm run build:all && npm run playground:build --prefix plugins/svg-highlighter && npm run playground:build --prefix plugins/particles && npx serve plugins/particles/site --listen 3000",
+    "demo:particles": "npm run build:all && npm run playground:build --prefix plugins/particles && npx serve plugins/particles/site --listen 3003"
   },
   "keywords": [
     "svg",

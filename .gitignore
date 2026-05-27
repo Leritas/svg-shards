@@ -2,6 +2,7 @@ node_modules/
 dist/
 site/
 plugins/svg-highlighter/site/
+plugins/particles/site/
 
-.examples
-.idea
+.examples/
+.idea/

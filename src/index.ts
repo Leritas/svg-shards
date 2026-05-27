@@ -47,3 +47,18 @@ export {
     GroupElement,
     UseElement,
 } from './elements';
+
+export type {
+    ShapeKind,
+    CreateShapeBase,
+    CreateRectOptions,
+    CreateCircleOptions,
+    CreateEllipseOptions,
+    CreateLineOptions,
+    CreatePolygonOptions,
+    CreatePolylineOptions,
+    CreatePathOptions,
+    CreateOptionsFor,
+    ShardTypeFor,
+    PointsInput,
+} from './create';

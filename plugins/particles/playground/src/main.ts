@@ -1,14 +1,12 @@
 import { createLessonContext, initAppState, resetScene } from './app-state';
 import { clearLog, initLogPanel, logApi } from './log';
-import { allLessons, defaultLessonId, pluginGroups } from './lessons/plugins';
-import { lessons as coreLessons } from './lessons';
+import { defaultLessonId, particlesLessons } from './lessons';
 import type { Lesson } from './types';
 
 let activeCleanup: (() => void) | null = null;
 let activeLesson: Lesson | null = null;
 
 const navEl = document.getElementById('lesson-nav')!;
-const pluginGroupsHost = document.getElementById('plugin-groups-host')!;
 const titleEl = document.getElementById('lesson-title')!;
 const descEl = document.getElementById('lesson-description')!;
 const apiRefsEl = document.getElementById('lesson-api-refs')!;
@@ -22,38 +20,12 @@ function setSnippet(code: string): void {
 
 function getLessonFromHash(): Lesson {
     const id = location.hash.replace(/^#/, '') || defaultLessonId;
-    return allLessons.find((lesson) => lesson.id === id) ?? allLessons[0];
-}
-
-function isPluginLesson(id: string): boolean {
-    return pluginGroups.some((group) => group.lessons.some((lesson) => lesson.id === id));
-}
-
-function initPluginNav(): void {
-    pluginGroupsHost.replaceChildren();
-
-    for (const group of pluginGroups) {
-        const details = document.createElement('details');
-        details.className = 'plugin-group';
-        details.dataset.groupId = group.id;
-        details.open = true;
-
-        const summary = document.createElement('summary');
-        summary.className = 'plugin-group-title';
-        summary.textContent = group.title;
-
-        const list = document.createElement('ul');
-        list.className = 'lesson-nav plugin-lesson-nav';
-
-        details.appendChild(summary);
-        details.appendChild(list);
-        pluginGroupsHost.appendChild(details);
-    }
+    return particlesLessons.find((lesson) => lesson.id === id) ?? particlesLessons[0];
 }
 
 function updateNav(activeId: string): void {
     navEl.replaceChildren();
-    for (const lesson of coreLessons) {
+    for (const lesson of particlesLessons) {
         const link = document.createElement('a');
         link.href = `#${lesson.id}`;
         link.textContent = lesson.title.split(' — ')[0] || lesson.title;
@@ -61,36 +33,6 @@ function updateNav(activeId: string): void {
             link.classList.add('active');
         }
         navEl.appendChild(link);
-    }
-
-    for (const group of pluginGroups) {
-        const details = pluginGroupsHost.querySelector<HTMLDetailsElement>(
-            `.plugin-group[data-group-id="${group.id}"]`,
-        );
-        const list = details?.querySelector('.plugin-lesson-nav');
-        if (!list) {
-            continue;
-        }
-
-        list.replaceChildren();
-        for (const lesson of group.lessons) {
-            const link = document.createElement('a');
-            link.href = `#${lesson.id}`;
-            link.textContent = lesson.title.split(' — ')[0] || lesson.title;
-            if (lesson.id === activeId) {
-                link.classList.add('active');
-            }
-            list.appendChild(link);
-        }
-    }
-
-    if (isPluginLesson(activeId)) {
-        document.querySelector('.plugin-section')?.setAttribute('open', '');
-        for (const group of pluginGroups) {
-            if (group.lessons.some((lesson) => lesson.id === activeId)) {
-                pluginGroupsHost.querySelector(`.plugin-group[data-group-id="${group.id}"]`)?.setAttribute('open', '');
-            }
-        }
     }
 }
 
@@ -158,7 +100,6 @@ function remountActiveLessonControls(): void {
 function init(): void {
     initLogPanel(document.getElementById('log-output')!);
     initAppState(canvasHost);
-    initPluginNav();
 
     document.getElementById('btn-clear-log')!.addEventListener('click', clearLog);
     document.getElementById('btn-reset-scene')!.addEventListener('click', () => {
@@ -172,7 +113,7 @@ function init(): void {
     });
 
     initRouter();
-    logApi('Playground ready', `${allLessons.length} lessons loaded`);
+    logApi('Particles playground ready', `${particlesLessons.length} lessons loaded`);
 }
 
 init();

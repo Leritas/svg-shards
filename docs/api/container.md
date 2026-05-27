@@ -84,6 +84,34 @@ svg.enableAutoRefresh({ debounceMs: 32 });
 svg.disableAutoRefresh();
 ```
 
+### Programmatic shape creation
+
+Create primitive shards without manual `createElementNS` + `refresh()`:
+
+```typescript
+const dot = svg.createCircle({ cx: 50, cy: 60, r: 12, fill: '#f00', id: 'dot' });
+
+const rects = svg.createMany('rect', 10, (i) => ({
+    x: i * 12,
+    y: 0,
+    width: 10,
+    height: 10,
+    fill: '#09f',
+}));
+```
+
+Supported single methods: `createRect`, `createCircle`, `createEllipse`, `createLine`, `createPolygon`, `createPolyline`, `createPath`.
+
+Batch via `createMany(kind, count, factory)`. Optional `parent: GroupElement` appends into a group and updates `group.children`. Shards are registered immediately in `elements` and `registry` — no full re-parse.
+
+### `registerNode(node)`
+
+Wrap a DOM node as a shard and add it to the type map if supported:
+
+```typescript
+const shard = svg.registerNode(existingNode);
+```
+
 ## SvgElementMap keys
 
 | Key        | DOM tag      | Class             |

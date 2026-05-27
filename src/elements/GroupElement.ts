@@ -22,6 +22,13 @@ export class GroupElement extends SvgElement {
         this.htmlNode.appendChild(element.htmlNode);
     }
 
+    /** Link an already-appended child shard (used by programmatic create). */
+    adoptChild(element: SvgElementUnion): void {
+        if (!this._children.includes(element)) {
+            this._children.push(element);
+        }
+    }
+
     removeChild(element: SvgElementUnion): void {
         const index = this._children.indexOf(element);
         if (index > -1) {
