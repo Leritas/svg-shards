@@ -112,6 +112,17 @@ Wrap a DOM node as a shard and add it to the type map if supported:
 const shard = svg.registerNode(existingNode);
 ```
 
+### `removeShard(shard)`
+
+Remove a programmatically created shard from the type map, parent group `children`, and DOM:
+
+```typescript
+const dot = svg.createCircle({ cx: 10, cy: 10, r: 5 });
+svg.removeShard(dot);
+```
+
+Use this when deleting shards without a full `refresh()` — for example `ParticleField.dispose()`.
+
 ## SvgElementMap keys
 
 | Key        | DOM tag      | Class             |

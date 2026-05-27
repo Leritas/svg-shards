@@ -25,11 +25,11 @@ export interface ParticleInit {
 }
 
 export interface ParticleFieldContainer {
-    createMany(
-        kind: 'circle',
+    createMany<K extends 'circle' | 'path'>(
+        kind: K,
         count: number,
-        factory: (index: number) => ParticleInit & { parent?: GroupElement },
-    ): import('svg-shards').CircleElement[];
+        factory: (index: number) => ParticleInit & { parent?: GroupElement; d?: string },
+    ): K extends 'circle' ? import('svg-shards').CircleElement[] : import('svg-shards').PathElement[];
 
     htmlNode: SvgContainer['htmlNode'];
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { createSvgShards } from 'svg-shards';
+import { createSvgShards, type GroupElement } from 'svg-shards';
 import { flushScheduledBatches } from 'svg-shards/reactive';
 import { ParticleField } from '../src/ParticleField';
 import { parseSvg } from '../../../tests/helpers';
@@ -64,11 +64,13 @@ describe('ParticleField', () => {
         field.dispose();
     });
 
-    it('dispose removes DOM nodes', () => {
+    it('dispose removes DOM nodes and clears registry', () => {
         svg = parseSvg(FIXTURE);
         const container = createSvgShards.fromElement(svg)!;
+        const group = container.getById('particles') as GroupElement;
         const field = new ParticleField(container, {
             bounds: { width: 400, height: 300 },
+            parent: group,
         });
 
         field.spawn(5, (i) => ({ cx: i * 5, cy: 10, r: 2 }));
@@ -76,5 +78,55 @@ describe('ParticleField', () => {
 
         expect(field.count).toBe(0);
         expect(svg.querySelectorAll('circle')).toHaveLength(0);
+        expect(container.getByType('circle')).toHaveLength(0);
+        expect(group.children).toHaveLength(0);
+    });
+
+    it('stop prevents further simulation steps', () => {
+        svg = parseSvg(FIXTURE);
+        const container = createSvgShards.fromElement(svg)!;
+        const field = new ParticleField(container, {
+            bounds: { width: 400, height: 300 },
+            gravity: 0,
+        });
+
+        field.spawn(1, () => ({ cx: 50, cy: 50, r: 5, vx: 100, vy: 0 }));
+        const shard = container.getByType('circle')[0];
+
+        field.start();
+        flushScheduledBatches();
+        const cxAfterStart = shard.cx;
+
+        field.stop();
+        flushScheduledBatches();
+        flushScheduledBatches();
+
+        expect(shard.cx).toBe(cxAfterStart);
+        field.dispose();
+    });
+
+    it('uses viewBox dimensions as default bounds', () => {
+        svg = parseSvg(FIXTURE);
+        const container = createSvgShards.fromElement(svg)!;
+        const field = new ParticleField(container);
+
+        expect(field.bounds).toEqual({ width: 400, height: 300 });
+    });
+
+    it('reuses pool shards on respawn without growing DOM', () => {
+        svg = parseSvg(FIXTURE);
+        const container = createSvgShards.fromElement(svg)!;
+        const field = new ParticleField(container, {
+            bounds: { width: 400, height: 300 },
+        });
+
+        field.spawn(20, (i) => ({ cx: i, cy: 10, r: 2 }));
+        const nodes = container.getByType('circle').map((shard) => shard.htmlNode);
+
+        field.spawn(20, (i) => ({ cx: i + 50, cy: 20, r: 3 }));
+        const nodesAfter = container.getByType('circle').map((shard) => shard.htmlNode);
+
+        expect(nodesAfter).toEqual(nodes);
+        field.dispose();
     });
 });

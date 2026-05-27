@@ -10,8 +10,13 @@ export function spawnCircleParticles(
     init: (index: number) => ParticleInit,
     parent?: GroupElement,
 ): CircleElement[] {
+    const inits: ParticleInit[] = [];
+    for (let i = 0; i < count; i++) {
+        inits.push(init(i));
+    }
+
     const shards = container.createMany('circle', count, (i) => {
-        const particle = init(i);
+        const particle = inits[i];
         return {
             parent,
             cx: particle.cx ?? 0,
@@ -28,7 +33,7 @@ export function spawnCircleParticles(
     state.shards = shards;
 
     for (let i = 0; i < count; i++) {
-        const particle = init(i);
+        const particle = inits[i];
         state.cx[i] = particle.cx ?? shards[i].cx;
         state.cy[i] = particle.cy ?? shards[i].cy;
         state.vx[i] = particle.vx ?? 0;

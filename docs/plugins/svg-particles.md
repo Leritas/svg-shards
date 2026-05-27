@@ -79,14 +79,14 @@ field.start();
 
 ## Lifecycle
 
-| Phase        | API                                                              | What happens                                           |
-| ------------ | ---------------------------------------------------------------- | ------------------------------------------------------ |
-| Create field | `new ParticleField(container, options)`                          | Reads bounds from options or `container.viewBox`       |
-| Spawn        | `field.spawn(count, init)`                                       | Removes previous particles, creates circles, fills SoA |
-| Run          | `field.start()`                                                  | Starts `scheduleBatch` loop (no-op if `count === 0`)   |
-| Pause        | `field.stop()`                                                   | Freezes simulation; shards stay in DOM                 |
-| Tune live    | `field.gravity = …`, `field.restitution = …`, `field.bounds = …` | Applied on next frame while running or paused          |
-| Cleanup      | `field.dispose()`                                                | `stop()` + remove all particle nodes + clear state     |
+| Phase        | API                                                              | What happens                                                                       |
+| ------------ | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Create field | `new ParticleField(container, options)`                          | Reads bounds from options or `container.viewBox`                                   |
+| Spawn        | `field.spawn(count, init)`                                       | Reuses pooled circles when possible; hides excess shards instead of destroying DOM |
+| Run          | `field.start()`                                                  | Starts `scheduleBatch` loop (no-op if `count === 0`)                               |
+| Pause        | `field.stop()`                                                   | Freezes simulation; shards stay in DOM                                             |
+| Tune live    | `field.gravity = …`, `field.restitution = …`, `field.bounds = …` | Applied on next frame while running or paused                                      |
+| Cleanup      | `field.dispose()`                                                | `stop()` + remove all particle nodes + clear state                                 |
 
 ```typescript
 field.spawn(40, init);
@@ -99,7 +99,7 @@ field.start();
 field.dispose(); // remove DOM nodes when done
 ```
 
-Calling `spawn()` again replaces the current set (previous shards are removed from the DOM).
+Calling `spawn()` again replaces the active simulation set. DOM nodes are **reused** from an internal pool when the new count is ≤ the previous capacity — no full tear-down unless you call `dispose()`.
 
 ### Read-only state
 
@@ -179,6 +179,59 @@ Each frame for particle `i`:
 
 `gravity` is in **pixels per second²** in the same coordinate system as your SVG `viewBox`. A 400×300 viewBox with `gravity: 980` feels roughly “Earth-like” relative to that scale; use `200` for gentle drift or `1800` for heavy drops.
 
+## `ParticlePool`
+
+`ParticleField` uses an internal pool to reuse circle DOM nodes across `spawn()` calls. For custom simulators (snowfall, emitters), use `ParticlePool` directly:
+
+```typescript
+import { ParticlePool } from '@svg-shards/particles';
+
+const pool = new ParticlePool(svg, { parent: layer, maxSize: 500 });
+
+const shards = pool.acquire(150, (i) => ({
+    cx: Math.random() * 400,
+    cy: Math.random() * 100,
+    r: 4,
+    fill: '#fff',
+}));
+
+// Later — reuse nodes without DOM alloc:
+pool.acquire(150, (i) => ({ cx: i * 2, cy: 50, r: 4 }));
+
+pool.release(3); // hide shard at index 3 (opacity 0)
+pool.reset(); // remove all shards via svg.removeShard()
+```
+
+| Method / property      | Description                                                                 |
+| ---------------------- | --------------------------------------------------------------------------- |
+| `acquire(count, init)` | Activate `count` shards; create new DOM nodes only when pool capacity grows |
+| `release(index)`       | Hide one shard by index                                                     |
+| `reset()`              | Remove all pooled shards from DOM and registry                              |
+| `capacity`             | Current number of DOM nodes in the pool                                     |
+| `maxSize`              | Upper bound on pool growth (default: unlimited)                             |
+
+## Custom path shapes — `spawnFromPath`
+
+Spawn many path shards from a template `d` string or `PathElement`. Per-shard overrides (size variants, styling) go in the init callback:
+
+```typescript
+import { spawnFromPath } from '@svg-shards/particles';
+
+const flakes = spawnFromPath(
+    svg,
+    'M 0 0 L 0 -8 M 0 0 L 6 3',
+    100,
+    (i) => ({
+        d: snowflakePath(4 + (i % 4), i % 8), // optional per-shard d
+        fill: '#fff',
+        opacity: 0.8,
+    }),
+    { parent: layer },
+);
+```
+
+The snowfall playground lesson uses this API with a custom `scheduleBatch` loop (rotation and wind are not part of `ParticleField`).
+
 ## Low-level exports
 
 For custom simulators or tests, the plugin also exports pure math and spawn helpers:
@@ -186,6 +239,8 @@ For custom simulators or tests, the plugin also exports pure math and spawn help
 | Export                                                         | Description                                             |
 | -------------------------------------------------------------- | ------------------------------------------------------- |
 | `ParticleField`                                                | High-level field with spawn / start / stop / dispose    |
+| `ParticlePool`                                                 | Reusable circle shard pool for custom simulators        |
+| `spawnFromPath(container, template, count, init?, options?)`   | Spawn path shards from a template                       |
 | `ParticleState`                                                | SoA container (`cx`, `cy`, `vx`, `vy`, `r`, `shards[]`) |
 | `spawnCircleParticles(container, state, count, init, parent?)` | Spawn without `ParticleField` wrapper                   |
 | `integrateParticle(cx, cy, vx, vy, gravity, dt)`               | Single Euler step → `{ cx, cy, vx, vy }`                |
@@ -287,14 +342,15 @@ svg-shards (core)
   scheduleBatch (reactive)   ──► rAF-coalesced updates
 
 @svg-shards/particles
-  ParticleField              ──► spawn + SoA physics + loop
+  ParticleField              ──► spawn + SoA physics + pool + loop
+  ParticlePool / spawnFromPath ──► reuse DOM + custom path shapes
 ```
 
 Particles do **not** use `bindProperty` per shard — that would create thousands of effects. One batch loop writes coordinates directly, which scales to 500+ circles.
 
 ## Roadmap (not in current release)
 
-See [Particles section in roadmap](../.internal/roadmap.md): `spawnFromPath`, object pooling, `bindTransform` per particle, explode/implode morphing.
+See [Particles section in roadmap](../.internal/roadmap.md): `bindTransform` per particle, explode/implode morphing, path morphing via reactive `d`.
 
 ## Cleanup
 
@@ -304,4 +360,4 @@ Always dispose when removing a scene or navigating away:
 field.dispose();
 ```
 
-This stops the loop, removes particle `<circle>` nodes, and clears internal arrays. Shards may remain in `svg.elements.circle` until a full `refresh()` — for demos, prefer a dedicated `<g id="particles">` parent and `dispose()` before respawning.
+This stops the loop, removes all particle nodes via `svg.removeShard()`, and clears internal state. The container registry and parent `GroupElement.children` stay in sync — no manual `refresh()` needed.

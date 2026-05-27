@@ -1,5 +1,6 @@
 import { el } from '../types';
 import type { PlaygroundHighlightTarget } from '../types';
+import type { SpawnFromPathInit, SpawnPathParent } from '../../../src/spawn/fromPath';
 
 /** Minimal shard — avoids src/dist svg-shards class mismatch in playground lessons. */
 export interface ParticlesShard {
@@ -16,10 +17,14 @@ export interface CircleShard extends ParticlesShard, PlaygroundHighlightTarget {
     cy: number;
 }
 
-export interface ParticlesGroup extends ParticlesShard {
+export interface ParticlesGroup extends ParticlesShard, SpawnPathParent {
     children: ParticlesShard[];
     removeChild(element: ParticlesShard): void;
 }
+
+export type ParticlesCreateManyOptions = SpawnFromPathInit & {
+    parent?: ParticlesGroup;
+};
 
 /** Any SvgContainer from createSvgShards satisfies this structurally. */
 export interface ParticlesContainer {
@@ -36,11 +41,9 @@ export interface ParticlesContainer {
         stroke?: string;
         strokeWidth?: number;
     }): CircleShard;
-    createMany(
-        kind: 'circle' | 'path',
-        count: number,
-        factory: (index: number) => Record<string, unknown> & { parent?: ParticlesGroup },
-    ): ParticlesShard[];
+    createMany(kind: 'circle', count: number, factory: (index: number) => ParticlesCreateManyOptions): CircleShard[];
+    createMany(kind: 'path', count: number, factory: (index: number) => ParticlesCreateManyOptions): ParticlesShard[];
+    removeShard(shard: ParticlesShard): void;
 }
 
 /** Bridge LessonContext SvgContainer → playground structural type (src/dist safe). */

@@ -4,13 +4,17 @@ Spawn and simulate hundreds of SVG circle shards using `svg-shards` create API a
 
 **Full documentation:** [docs/plugins/svg-particles.md](../../docs/plugins/svg-particles.md)
 
-**Interactive playground:**
+## API overview
 
-```bash
-npm run playground:dev   # from this directory — http://localhost:3003
-```
+| Export                                | Purpose                                            |
+| ------------------------------------- | -------------------------------------------------- |
+| `ParticleField`                       | Circle physics field — spawn, start, stop, dispose |
+| `ParticlePool`                        | Reuse circle DOM nodes across spawn cycles         |
+| `spawnFromPath`                       | Spawn path shards from a template `d`              |
+| `spawnCircleParticles`                | Low-level circle spawn into SoA state              |
+| `stepParticles` / `integrateParticle` | Physics helpers                                    |
 
-Quick example:
+## Quick example
 
 ```typescript
 import { createSvgShards } from 'svg-shards';
@@ -34,4 +38,10 @@ field.spawn(150, (i) => ({
 }));
 
 field.start();
+```
+
+**Interactive playground:**
+
+```bash
+npm run playground:dev   # from this directory — http://localhost:3003
 ```

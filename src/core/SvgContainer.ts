@@ -11,7 +11,7 @@ import {
     type ShapeKind,
     type ShardTypeFor,
 } from '../create';
-import type { GroupElement } from '../elements/GroupElement';
+import { GroupElement } from '../elements/GroupElement';
 import type {
     CircleElement,
     EllipseElement,
@@ -25,7 +25,7 @@ import { ElementFactory } from '../factories/ElementFactory';
 import { SvgElement } from './SvgElement';
 import { AutoRefreshOptions, CreateSvgShardsOptions } from './options';
 import { NodeRegistry } from './NodeRegistry';
-import { SvgElementEntry, SvgElementMap, SvgElementTypeKey, TAG_TO_MAP_KEY } from './types';
+import { SvgElementEntry, SvgElementMap, SvgElementTypeKey, SvgElementUnion, TAG_TO_MAP_KEY } from './types';
 
 const TYPE_ORDER: SvgElementTypeKey[] = [
     'rect',
@@ -264,6 +264,28 @@ export class SvgContainer {
 
     registerNode(node: Element): SvgElement | null {
         return this.wrapAndRegister(node);
+    }
+
+    removeShard(shard: SvgElement): void {
+        const mapKey = TAG_TO_MAP_KEY[shard.htmlNode.tagName.toLowerCase()];
+        if (mapKey) {
+            const bucket = this._elements[mapKey];
+            const idx = bucket.indexOf(shard as never);
+            if (idx > -1) {
+                bucket.splice(idx, 1);
+            }
+        }
+
+        const parentNode = shard.htmlNode.parentNode;
+        if (parentNode instanceof Element) {
+            const parentShard = this._registry.get(parentNode);
+            if (parentShard instanceof GroupElement) {
+                parentShard.removeChild(shard as SvgElementUnion);
+                return;
+            }
+        }
+
+        shard.htmlNode.remove();
     }
 
     private createShape<K extends ShapeKind>(kind: K, options: CreateOptionsFor<K>): ShardTypeFor<K> {

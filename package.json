@@ -1,6 +1,6 @@
 {
   "name": "svg-shards",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "TypeScript OOP library for working with SVG as independent shards",
   "author": "Leritas <i@leritas.ru>",
   "type": "module",

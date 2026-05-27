@@ -1,15 +1,16 @@
 # npm Publishing Runbook
 
-Developer-facing guide for releasing `svg-shards` and `@svg-shards/highlighter` to npm.
+Developer-facing guide for releasing `svg-shards`, `@svg-shards/highlighter`, and `@svg-shards/particles` to npm.
 
 ## Overview
 
-Two independent npm packages live in one repository. **Each publish run releases exactly one package** — never both at once.
+Three independent npm packages live in one repository. **Each publish run releases exactly one package** — never more than one at once.
 
 | Package            | npm name                                                                           | Version file                                                                         |
 | ------------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
 | Core               | `[svg-shards](https://www.npmjs.com/package/svg-shards)`                           | `[package.json](../../package.json)`                                                 |
 | Highlighter plugin | `[@svg-shards/highlighter](https://www.npmjs.com/package/@svg-shards/highlighter)` | `[plugins/svg-highlighter/package.json](../../plugins/svg-highlighter/package.json)` |
+| Particles plugin   | `[@svg-shards/particles](https://www.npmjs.com/package/@svg-shards/particles)`     | `[plugins/particles/package.json](../../plugins/particles/package.json)`             |
 
 - **CI** (`.github/workflows/ci.yml`) runs on every push/PR to `main`: build, test, lint, format check.
 - **Publish** (`.github/workflows/publish.yml`) runs only on a version git tag or manual workflow dispatch.
@@ -18,7 +19,7 @@ Two independent npm packages live in one repository. **Each publish run releases
 
 Configure once per package on [npmjs.com](https://www.npmjs.com/) before the first automated release.
 
-For **each** package (`svg-shards` and `@svg-shards/highlighter`):
+For **each** package (`svg-shards`, `@svg-shards/highlighter`, and `@svg-shards/particles`):
 
 1. Open the package on npm (create it manually on first release if it does not exist yet).
 2. Go to **Package settings → Trusted Publisher → Add**.
@@ -32,9 +33,9 @@ For **each** package (`svg-shards` and `@svg-shards/highlighter`):
 | Workflow filename    | `publish.yml`   |
 | Environment          | _(leave empty)_ |
 
-1. Save.
+4. Save.
 
-Both packages trust the same workflow file. npm validates OIDC based on which `package.json` is published in a given run.
+All three packages trust the same workflow file. npm validates OIDC based on which `package.json` is published in a given run.
 
 No long-lived `NPM_TOKEN` secret is required when Trusted Publishing is configured.
 
@@ -53,11 +54,19 @@ npm run build
 npm run prepublishOnly --prefix plugins/svg-highlighter
 ```
 
+**Particles** (same pattern as highlighter):
+
+```bash
+npm run build
+npm run prepublishOnly --prefix plugins/particles
+```
+
 Optional — inspect the tarball:
 
 ```bash
 npm pack                    # in repo root → svg-shards-*.tgz
-npm pack --prefix plugins/svg-highlighter   # → svg-shards-highlighter-*.tgz
+npm pack --prefix plugins/svg-highlighter
+npm pack --prefix plugins/particles
 tar -tzf svg-shards-*.tgz   # should contain dist/, README.md, LICENSE — no src/
 ```
 
@@ -75,12 +84,12 @@ tar -tzf svg-shards-*.tgz   # should contain dist/, README.md, LICENSE — no sr
 Example:
 
 ```bash
-# package.json: "version": "1.0.1"
+# package.json: "version": "0.3.1"
 git add package.json
-git commit -m "chore: release svg-shards v1.0.1"
+git commit -m "chore: release svg-shards v0.3.1"
 git push origin main
-git tag v1.0.1
-git push origin v1.0.1
+git tag v0.3.1
+git push origin v0.3.1
 ```
 
 ## Release `@svg-shards/highlighter` (independent)
@@ -98,15 +107,35 @@ git push origin v1.0.1
 Example:
 
 ```bash
-# plugins/svg-highlighter/package.json: "version": "1.0.1"
-git add plugins/svg-highlighter/package.json
-git commit -m "chore: release @svg-shards/highlighter v1.0.1"
-git push origin main
-git tag highlighter-v1.0.1
-git push origin highlighter-v1.0.1
+git tag highlighter-v0.2.2
+git push origin highlighter-v0.2.2
 ```
 
 **First highlighter release:** publish `svg-shards` to npm first. Users need a resolvable `peerDependencies` entry.
+
+## Release `@svg-shards/particles` (independent)
+
+| Step | Action                                                                                       |
+| ---- | -------------------------------------------------------------------------------------------- |
+| 1    | Ensure `svg-shards@^0.3.0` (or required range) is **already published** on npm               |
+| 2    | Bump `"version"` in `[plugins/particles/package.json](../../plugins/particles/package.json)` |
+| 3    | Commit and push to `main`                                                                    |
+| 4    | `git tag particles-vX.Y.Z` → `git push origin particles-vX.Y.Z`                              |
+| 5    | GitHub Actions → **Publish** → green run                                                     |
+| 6    | npmjs.com → `@svg-shards/particles` → confirm version                                        |
+
+Example:
+
+```bash
+# plugins/particles/package.json: "version": "0.2.0"
+git add plugins/particles/package.json
+git commit -m "chore: release @svg-shards/particles v0.2.0"
+git push origin main
+git tag particles-v0.2.0
+git push origin particles-v0.2.0
+```
+
+**Order for new core features:** publish `svg-shards` first, then particles (particles peer-depends on core create API).
 
 ## Alternative: manual publish without a tag
 
@@ -114,7 +143,7 @@ Use when you need a hotfix or to retry after a failed workflow.
 
 1. GitHub → **Actions** → **Publish** → **Run workflow**
 2. Branch: `main`
-3. Package: `svg-shards` or `highlighter`
+3. Package: `svg-shards`, `highlighter`, or `particles`
 4. Run
 
 The workflow reads `"version"` from the already-committed `package.json`. Tag/version verification is **skipped** for manual runs — make sure the version bump is on `main` before triggering.
@@ -125,24 +154,25 @@ The workflow reads `"version"` from the already-committed `package.json`. Tag/ve
 | -------------------- | ------------------------- | -------------------------------------- |
 | `v1.2.3`             | `svg-shards`              | `package.json`                         |
 | `highlighter-v0.3.1` | `@svg-shards/highlighter` | `plugins/svg-highlighter/package.json` |
+| `particles-v0.2.0`   | `@svg-shards/particles`   | `plugins/particles/package.json`       |
 
-One tag → one package. There is no single tag that publishes both.
+One tag → one package. There is no single tag that publishes all packages.
 
 ## What the Publish workflow does
 
 1. **Resolve** — determine target package from tag prefix or manual input.
 2. **Verify** (tag pushes only) — tag semver must match `"version"` in the target `package.json`.
 3. **Install** — `npm ci` at repo root.
-4. **Build** — core only for `svg-shards`; core + plugin for `highlighter`.
-5. **Publish** — `npm publish` (OIDC via Trusted Publishing); scoped package uses `--access public`.
+4. **Build** — core only for `svg-shards`; core + plugin for `highlighter` or `particles`.
+5. **Publish** — `npm publish` (OIDC via Trusted Publishing); scoped packages use `--access public`.
 
 ## Common errors
 
 | Symptom                                    | Cause                                | Fix                                                                        |
 | ------------------------------------------ | ------------------------------------ | -------------------------------------------------------------------------- |
 | `package.json version does not match tag`  | Tag and `"version"` disagree         | Fix version or delete/recreate tag                                         |
-| OIDC / auth error in Publish job           | Trusted Publisher not configured     | Complete one-time npm setup above                                          |
-| Highlighter install fails for users        | Plugin published before core         | Publish `svg-shards` first, then highlighter                               |
+| OIDC / auth error in Publish job           | Trusted Publisher not configured     | Complete one-time npm setup above for each package                         |
+| Plugin install fails for users             | Plugin published before core         | Publish `svg-shards` first, then the plugin                                |
 | `npm publish` tries to bundle `file:../..` | `svg-shards` still in `dependencies` | Use `peerDependencies` + `devDependencies file:../..` (already configured) |
 
 ## Related files

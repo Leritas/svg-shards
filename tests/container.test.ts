@@ -156,4 +156,31 @@ describe('SvgContainer', () => {
         container.disableAutoRefresh();
         vi.useRealTimers();
     });
+
+    it('removeShard removes element from elements map and DOM', () => {
+        svg = parseSvg(FIXTURE);
+        const container = createSvgShards.fromElement(svg)!;
+        const created = container.createCircle({ cx: 10, cy: 10, r: 5 });
+
+        expect(container.getByType('circle')).toHaveLength(3);
+
+        container.removeShard(created);
+
+        expect(container.getByType('circle')).toHaveLength(2);
+        expect(svg.querySelectorAll('circle')).toHaveLength(2);
+    });
+
+    it('removeShard updates parent group children', () => {
+        svg = parseSvg(FIXTURE);
+        const container = createSvgShards.fromElement(svg)!;
+        const group = container.getById('group1')!;
+        const created = container.createCircle({ parent: group, cx: 1, cy: 1, r: 3 });
+
+        expect(group.children).toHaveLength(2);
+
+        container.removeShard(created);
+
+        expect(group.children).toHaveLength(1);
+        expect(container.getByType('circle')).toHaveLength(2);
+    });
 });

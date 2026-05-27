@@ -1,6 +1,6 @@
 {
   "name": "@svg-shards/particles",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Particle field plugin for svg-shards — spawn and simulate thousands of SVG shards",
   "author": "Leritas <i@leritas.ru>",
   "license": "MIT",
@@ -40,7 +40,7 @@
     "build": "tsc",
     "playground:build": "node scripts/build-playground.mjs",
     "playground:dev": "npm run playground:build && npx serve site --listen 3003",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build && npm test --prefix ../.."
   },
   "peerDependencies": {
     "@preact/signals-core": "^1.14.2",
