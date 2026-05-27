@@ -1,4 +1,4 @@
-import type { CircleElement, SvgContainer } from 'svg-shards';
+import type { CircleElement, GroupElement, SvgContainer } from 'svg-shards';
 import type { ParticleInit } from '../types';
 import type { ParticlePoolOptions } from './types';
 
